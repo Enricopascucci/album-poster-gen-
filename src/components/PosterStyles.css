@@ -1,0 +1,104 @@
+/* Densità testo per la tracklist */
+.tracklist-base {
+  column-gap: 0.5rem;
+}
+
+/* Poche tracce (1-14): 1 colonna, font normale */
+.tracks-few .track-item {
+  font-size: 1rem;
+  line-height: 1.55rem;
+  margin-bottom: 0.2rem;
+}
+
+/* Medie tracce (15-24): 2 colonne, font ridotto */
+.tracks-medium {
+  columns: 2;
+  column-gap: 0.6rem;
+}
+.tracks-medium .track-item {
+  font-size: 0.8rem;
+  line-height: 1.2rem;
+  margin-bottom: 0.15rem;
+  gap: 0.25rem;
+  break-inside: avoid;
+}
+.tracks-medium .track-item > span:first-child {
+  min-width: 1.1rem;
+}
+
+/* Molte tracce (25-36): 2 colonne, font molto ridotto */
+.tracks-many {
+  columns: 2;
+  column-gap: 0.5rem;
+}
+.tracks-many .track-item {
+  font-size: 0.68rem;
+  line-height: 1.05rem;
+  margin-bottom: 0.1rem;
+  gap: 0.2rem;
+  break-inside: avoid;
+}
+.tracks-many .track-item > span:first-child {
+  min-width: 1rem;
+}
+
+/* Tantissime tracce (37+): 2 colonne, font ultra ridotto */
+.tracks-very-many {
+  columns: 2;
+  column-gap: 0.5rem;
+}
+.tracks-very-many .track-item {
+  font-size: 0.62rem;
+  line-height: 0.95rem;
+  margin-bottom: 0.08rem;
+  gap: 0.18rem;
+  break-inside: avoid;
+}
+.tracks-very-many .track-item > span:first-child {
+  min-width: 0.95rem;
+}
+
+/* Nascondi scrollbar orizzontale (carosello) */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Facoltativo: clamp util se non hai line-clamp plugin */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* Poster base & temi */
+.poster { background: var(--poster-bg); }
+.poster-blur-layer {
+  background-position: center;
+  background-size: cover;
+  filter: blur(18px);
+  transform: scale(1.08); /* evita bordi trasparenti dopo blur */
+}
+
+/* Tipografia adaptive */
+.poster { font-family: var(--family, ui-sans-serif, system-ui); }
+.tracklist-base { text-wrap: balance; hyphens: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+.poster { background: var(--poster-bg); }
+.poster-blur-layer { background-position:center; background-size:cover; filter: blur(18px); transform: scale(1.08); }
+.tracklist-base { text-wrap: balance; hyphens: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+#poster, #poster * {
+  font-variation-settings: normal;
+}
