@@ -10,11 +10,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AlbumSearch } from '../components/AlbumSearch';
 import { PosterGenerator } from '../components/PosterGenerator';
 import type { Album } from '../types/album';
-import {
-  validateToken,
-  saveTokenToSession,
-  type TokenValidationResponse,
-} from '../services/tokenService';
+import type { TokenValidationResponse } from '../services/tokenService';
 
 export function CreateWithToken() {
   const { token } = useParams<{ token: string }>();
@@ -31,8 +27,9 @@ export function CreateWithToken() {
     }
 
     // Valida il token
-    validateToken(token)
-      .then((response) => {
+    import('../services/tokenService')
+      .then(({ validateToken, saveTokenToSession }) => validateToken(token)
+        .then((response) => {
         if (response.valid) {
           setValidationStatus('valid');
           setTokenData(response);
@@ -41,7 +38,7 @@ export function CreateWithToken() {
           setValidationStatus('invalid');
           setTokenData(response);
         }
-      })
+        }))
       .catch((error) => {
         console.error('Token validation error:', error);
         setValidationStatus('invalid');

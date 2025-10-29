@@ -1,9 +1,10 @@
 /**
  * Home Page - DICE.fm Style (clean version)
  */
+import starboyPoster from '../assets/music/starboy_poster.png';
 
 export function Home() {
-  const ETSY_SHOP_URL = 'https://www.etsy.com/shop/YOUR_SHOP_NAME';
+  const ETSY_SHOP_URL = 'https://www.etsy.com/shop/Moodlabstudios';
 
   return (
     <div className="min-h-screen bg-white">
@@ -28,31 +29,43 @@ export function Home() {
       {/* Hero Section */}
       <main className="pt-20">
         <section className="bg-white px-6 lg:px-12 py-24 lg:py-32">
-          <div className="max-w-[1400px] mx-auto">
-            <h2
-              className="text-[64px] md:text-[96px] lg:text-[128px] font-bold leading-[0.9] tracking-tight mb-10"
-              style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: 700 }}
-            >
-              CUSTOM<br />
-              ALBUM<br />
-              POSTERS
-            </h2>
-            <p
-              className="text-[18px] md:text-[22px] text-gray-700 max-w-[600px] mb-12 leading-[1.5]"
-              style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: 350 }}
-            >
-              Create high-quality custom posters for your favorite albums.
-              Digital delivery, instant download.
-            </p>
-            <a
-              href={ETSY_SHOP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-black text-white text-xs font-bold uppercase tracking-[0.08em] px-8 py-3.5 rounded-full hover:opacity-75 transition-opacity"
-              style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
-            >
-              Get Started
-            </a>
+          <div className="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Title + Copy */}
+            <div>
+              <h2
+                className="text-[64px] md:text-[96px] lg:text-[128px] font-bold leading-[0.9] tracking-tight mb-10"
+                style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: 700 }}
+              >
+                CUSTOM<br />
+                ALBUM<br />
+                POSTERS
+              </h2>
+              <p
+                className="text-[18px] md:text-[22px] text-gray-700 max-w-[600px] mb-12 leading-[1.5]"
+                style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: 350 }}
+              >
+                Create high-quality custom posters for your favorite albums.
+                Digital delivery, instant download.
+              </p>
+              <a
+                href={ETSY_SHOP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-black text-white text-xs font-bold uppercase tracking-[0.08em] px-8 py-3.5 rounded-full hover:opacity-75 transition-opacity"
+                style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+              >
+                Get Started
+              </a>
+            </div>
+
+            {/* Right: Sample poster image */}
+            <div className="relative">
+              <img
+                src={starboyPoster}
+                alt="Sample album poster"
+                className="w-full h-auto rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] border border-gray-200 object-cover"
+              />
+            </div>
           </div>
         </section>
 
