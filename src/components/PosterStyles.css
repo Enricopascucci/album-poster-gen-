@@ -5,7 +5,7 @@
 
 /* Poche tracce (1-14): 1 colonna, font normale */
 .tracks-few .track-item {
-  font-size: 1rem;
+  font-size: 0.8rem;
   line-height: 1.55rem;
   margin-bottom: 0.2rem;
 }
@@ -56,6 +56,34 @@
 }
 .tracks-very-many .track-item > span:first-child {
   min-width: 0.95rem;
+}
+
+/* Cast list per movie posters */
+.cast-list {
+  column-gap: 0.5rem;
+}
+
+/* Poco cast (1-6): 1 colonna */
+.cast-few .cast-item {
+  font-size: 1rem;
+  line-height: 1.55rem;
+  margin-bottom: 0.2rem;
+}
+
+/* Molto cast (7+): 2 colonne */
+.cast-many {
+  columns: 2;
+  column-gap: 0.6rem;
+}
+.cast-many .cast-item {
+  font-size: 0.8rem;
+  line-height: 1.2rem;
+  margin-bottom: 0.15rem;
+  gap: 0.25rem;
+  break-inside: avoid;
+}
+.cast-many .cast-item > span:first-child {
+  min-width: 1.1rem;
 }
 
 /* Nascondi scrollbar orizzontale (carosello) */

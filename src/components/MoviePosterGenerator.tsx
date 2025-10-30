@@ -1,12 +1,18 @@
+/**
+ * 🎬 Movie Poster Generator
+ *
+ * Componente principale per la generazione di poster cinematografici
+ * Gestisce personalizzazione e export
+ */
+
 import { useCallback, useMemo, useRef, useState } from "react";
-import type { Album, Track } from "../types/album";
+import type { Movie } from "../types/movie";
+import { getTMDbImageUrl } from "../types/movie";
 import { exportAsPNG } from "../utils/exportPoster";
-import { getTotalDuration } from "../utils/colorExtractor";
 import { useArtworkPreload } from "../hooks/useArtworkPreload";
 import { usePalette } from "../hooks/usePalette";
-import { useWaveform } from "../hooks/useWaveform";
-import { PosterCanvas } from "./PosterCanvas";
-import type { PosterBg, FrameStyle, LayoutVariant } from "./PosterCanvas";
+import { MovieCanvas } from "./MovieCanvas";
+import type { PosterBg, FrameStyle, LayoutVariant } from "./MovieCanvas";
 import { PosterSidebar } from "./PosterSidebar";
 import type { BgMode } from "./PosterBgPicker";
 import type { FontPickerValue } from "./FontPicker";
@@ -14,14 +20,19 @@ import { LoadingOverlay } from "./Spinner";
 import { MockupGalleryModal } from "./MockupGalleryModal";
 import "./PosterStyles.css";
 
-interface PosterGeneratorProps {
-  album: Album;
+interface MoviePosterGeneratorProps {
+  movie: Movie;
   onBack: () => void;
   tokenMode?: boolean;
   token?: string;
 }
 
-export function PosterGenerator({ album, onBack, tokenMode = false, token }: PosterGeneratorProps) {
+export function MoviePosterGenerator({
+  movie,
+  onBack,
+  tokenMode = false,
+  token
+}: MoviePosterGeneratorProps) {
   const posterRef = useRef<HTMLDivElement | null>(null);
 
   // ====== Personalizzazioni ======
@@ -33,10 +44,10 @@ export function PosterGenerator({ album, onBack, tokenMode = false, token }: Pos
   const [radius, setRadius] = useState<number>(8);
   const [tagline, setTagline] = useState<string>("");
   const [showDuration, setShowDuration] = useState<boolean>(true);
-  const [showCopyright, setShowCopyright] = useState<boolean>(true);
-  const [showWaveform, setShowWaveform] = useState<boolean>(true);
+  const [showRating, setShowRating] = useState<boolean>(true);
+  const [showCast, setShowCast] = useState<boolean>(true);
 
-  // ====== Font (nuovo picker) ======
+  // ====== Font (FontPicker) ======
   const [fontValue, setFontValue] = useState<FontPickerValue>({
     familyId: "Inter",
     weight: 800,
@@ -49,33 +60,16 @@ export function PosterGenerator({ album, onBack, tokenMode = false, token }: Pos
     setFontStack(cssStack);
   };
 
-  // ====== Dati album ======
-  const artistNames = useMemo(
-    () => (album?.artists ?? []).map((a) => a.name).join(", "),
-    [album?.artists]
-  );
-  const highResImage = album?.images?.[0]?.url ?? "";
-  const tracks: Track[] = useMemo(
-    () => album?.tracks?.items ?? [],
-    [album?.tracks?.items]
-  );
-  const totalDuration = useMemo(
-    () => (tracks.length > 0 ? getTotalDuration(tracks) : ""),
-    [tracks]
-  );
+  // ====== Dati film ======
+  const posterUrl = getTMDbImageUrl(movie.poster_path, 'original');
 
   // ====== Caricamenti ======
-  const imageReady = useArtworkPreload(highResImage);
+  const imageReady = useArtworkPreload(posterUrl);
   const {
     colors: colorPalette,
     loading: loadingColors,
     ready: paletteReady,
-  } = usePalette(highResImage);
-
-  // ====== Waveform ======
-  const {
-    data: waveformData,
-  } = useWaveform(tracks, 120, showWaveform);
+  } = usePalette(posterUrl);
 
   // ====== Gradiente header sidebar ======
   const accentGradient = useMemo(() => {
@@ -140,20 +134,18 @@ export function PosterGenerator({ album, onBack, tokenMode = false, token }: Pos
     }
   }, [bgMode, customBg]);
 
-  // ====== Tipografia (usa FontPicker) ======
-// Titolo = peso scelto; corpo = un po' più leggero; "bold" = un po' più pesante
-const fontVars = useMemo<React.CSSProperties>(() => {
-  const w = fontValue.weight;                     // es. 800
-  const body = Math.max(300, Math.min(700, w - 200));
-  const strong = Math.min(900, Math.max(600, w + 100));
-  return {
-    "--family": fontStack,
-    "--fw-title": String(w),
-    "--fw-body": String(body),
-    "--fw-strong": String(strong),
-  } as React.CSSProperties;
-}, [fontStack, fontValue.weight]);
-
+  // ====== Tipografia ======
+  const fontVars = useMemo<React.CSSProperties>(() => {
+    const w = fontValue.weight;
+    const body = Math.max(300, Math.min(700, w - 200));
+    const strong = Math.min(900, Math.max(600, w + 100));
+    return {
+      "--family": fontStack,
+      "--fw-title": String(w),
+      "--fw-body": String(body),
+      "--fw-strong": String(strong),
+    } as React.CSSProperties;
+  }, [fontStack, fontValue.weight]);
 
   // ====== Frame ======
   const frameVars = useMemo<React.CSSProperties>(() => {
@@ -185,16 +177,14 @@ const fontVars = useMemo<React.CSSProperties>(() => {
   const canDownload =
     !downloading && !loadingColors && paletteReady && imageReady && !hasDownloaded;
 
-  // Apre la modale con i mockup
   const handleDownload = useCallback(() => {
     if (!posterRef.current) return;
 
-    // In tokenMode, conferma prima di aprire la modale
     if (tokenMode && !hasDownloaded) {
       const confirmed = window.confirm(
-        '⚠️ ATTENZIONE: Puoi scaricare il poster UNA SOLA VOLTA.\n\n' +
-        'Sei sicuro di voler procedere?\n\n' +
-        'Assicurati di essere soddisfatto della personalizzazione!'
+        '⚠️ WARNING: You can download the poster ONLY ONCE.\n\n' +
+        'Are you sure you want to proceed?\n\n' +
+        'Make sure you are satisfied with the customization!'
       );
       if (!confirmed) return;
     }
@@ -202,7 +192,6 @@ const fontVars = useMemo<React.CSSProperties>(() => {
     setShowMockupModal(true);
   }, [tokenMode, hasDownloaded]);
 
-  // Download effettivo del poster (chiamato dalla modale)
   const handleConfirmDownload = useCallback(async () => {
     if (!posterRef.current) return;
 
@@ -210,10 +199,10 @@ const fontVars = useMemo<React.CSSProperties>(() => {
     setDownloading(true);
 
     try {
-      const albumName = (album?.name ?? "poster")
+      const movieName = movie.title
         .replace(/[^a-z0-9]/gi, "_")
         .toLowerCase();
-      const filename = `${albumName}_poster.png`;
+      const filename = `${movieName}_poster.png`;
       await exportAsPNG(posterRef.current, filename, {
         scale: 4,
         ratio: [2, 3],
@@ -222,17 +211,13 @@ const fontVars = useMemo<React.CSSProperties>(() => {
 
       // Se in tokenMode, marca come scaricato
       if (tokenMode && token) {
-        console.log('🔒 [PosterGenerator] TokenMode is active, marking as downloaded...');
-        console.log('   Token:', token);
-        console.log('   Album:', album.name);
-
         const { markDownloaded } = await import('../services/tokenService');
         const success = await markDownloaded({
           token,
           posterData: {
-            albumId: album.id,
-            albumName: album.name,
-            artistName: (album?.artists ?? []).map((a) => a.name).join(", "),
+            movieId: String(movie.id),
+            movieName: movie.title,
+            directorName: movie.credits?.crew.find(c => c.job === 'Director')?.name || 'N/A',
             customization: {
               bgMode,
               frame,
@@ -243,36 +228,23 @@ const fontVars = useMemo<React.CSSProperties>(() => {
           },
         });
 
-        console.log('📊 [PosterGenerator] markDownloaded result:', success);
-
         if (success) {
-          console.log('✅ [PosterGenerator] Token marked as downloaded successfully!');
           setHasDownloaded(true);
           alert(
-            '✅ Download completato!\n\n' +
-            'Il tuo poster è stato scaricato con successo.\n' +
-            'Questo link non può più essere utilizzato.'
-          );
-        } else {
-          console.error('❌ [PosterGenerator] Failed to mark token as downloaded');
-          alert(
-            '⚠️ Download completato ma si è verificato un errore.\n\n' +
-            'Il poster è stato salvato sul tuo computer,\n' +
-            'ma potrebbe essere necessario contattare il supporto.'
+            '✅ Download completed!\n\n' +
+            'Your poster has been successfully downloaded.\n' +
+            'This link can no longer be used.'
           );
         }
-      } else {
-        console.log('ℹ️ [PosterGenerator] TokenMode is OFF or no token provided');
       }
     } catch (error) {
       console.error('Export error:', error);
-      alert("Export fallito. Controlla CORS immagini o riduci la qualità.");
+      alert("Export failed. Check CORS or reduce quality.");
     } finally {
       setDownloading(false);
     }
-  }, [album, tokenMode, token, hasDownloaded, bgMode, frame, layout, radius, tagline]);
+  }, [movie, tokenMode, token, hasDownloaded, bgMode, frame, layout, radius, tagline]);
 
-  // Mostra spinner se sta caricando l'immagine o i colori
   const isInitialLoading = !imageReady || loadingColors;
 
   return (
@@ -284,45 +256,37 @@ const fontVars = useMemo<React.CSSProperties>(() => {
         onClose={() => setShowMockupModal(false)}
         onConfirmDownload={handleConfirmDownload}
         posterRef={posterRef}
-        albumName={album?.name ?? "poster"}
+        albumName={movie.title}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-8 items-start">
-        <PosterCanvas
-          album={album}
+        <MovieCanvas
+          movie={movie}
           posterRef={posterRef}
-          artistNames={artistNames}
-          highResImage={highResImage}
-          tracks={tracks}
-          totalDuration={totalDuration}
-          colorPalette={colorPalette}
-          bg={bgMode as PosterBg}     // include anche 'custom'
+          bg={bgMode as PosterBg}
           frame={frame}
           layout={layout}
           radius={radius}
           tagline={tagline}
           showDuration={showDuration}
-          showCopyright={showCopyright}
-          showWaveform={showWaveform}
-          waveformData={waveformData}
+          showRating={showRating}
+          showCast={showCast}
+          colorPalette={colorPalette}
           themeVars={themeVars}
           fontVars={fontVars}
           frameVars={frameVars}
           rows={rows}
-          insetXClass="px-6 md:px-8"  // stessi margini top/bottom
+          insetXClass="px-6 md:px-8"
         />
 
         <PosterSidebar
           accentGradient={accentGradient}
-          // Background
           bgMode={bgMode}
           setBgMode={setBgMode}
           customBg={customBg}
           setCustomBg={setCustomBg}
-          // Font picker
           fontValue={fontValue}
           setFontValue={handleFontChange}
-          // Resto dei controlli
           layout={layout}
           setLayout={setLayout}
           radius={radius}
@@ -333,10 +297,10 @@ const fontVars = useMemo<React.CSSProperties>(() => {
           setTagline={setTagline}
           showDuration={showDuration}
           setShowDuration={setShowDuration}
-          showCopyright={showCopyright}
-          setShowCopyright={setShowCopyright}
-          showWaveform={showWaveform}
-          setShowWaveform={setShowWaveform}
+          showCopyright={showRating}
+          setShowCopyright={setShowRating}
+          showWaveform={showCast}
+          setShowWaveform={setShowCast}
           onBack={onBack}
           onDownload={handleDownload}
           canDownload={canDownload}

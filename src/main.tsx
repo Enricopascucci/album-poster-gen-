@@ -1,44 +1,41 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './index.css'
 import { Home } from './pages/Home'
-import { AlbumCreator } from './pages/album/AlbumCreator'
 import { AlbumCreateWithToken } from './pages/album/AlbumCreateWithToken'
 
 /**
- * Main Router
- * 
- * Struttura scalabile per supportare diversi tipi di poster:
- * - /album → Generatore album (demo/test)
- * - /album/create/:token → Generatore album con token
- * - /movie → Generatore film (futuro)
- * - /movie/create/:token → Generatore film con token (futuro)
- * - /game → Generatore videogiochi (futuro)
- * - /game/create/:token → Generatore videogiochi con token (futuro)
+ * Main Router - Paywall Only (Music Posters)
+ *
+ * ✅ 100% Paywall: solo token-based access
+ * ❌ Nessuna demo gratuita
+ *
+ * Routes Attive:
+ * - / → Home (landing Etsy)
+ * - /album/create/:token → Generatore con token validato
+ * - /create/:token → Legacy redirect (retrocompatibilità)
+ *
+ * Routes Rimosse (no demo):
+ * - /album → REMOVED (era demo gratuita)
+ * - /music → REMOVED (era demo gratuita)
+ * - /movie → REMOVED (futuro multi-tipo)
  */
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        {/* Home */}
+        {/* Home - Landing page con CTA Etsy */}
         <Route path="/" element={<Home />} />
-        
-        {/* Album Routes */}
-        <Route path="/album" element={<AlbumCreator />} />
+
+        {/* Album Poster Generator - Solo con Token */}
         <Route path="/album/create/:token" element={<AlbumCreateWithToken />} />
-        
-        {/* Movie Routes - To be implemented */}
-        {/* <Route path="/movie" element={<MovieCreator />} /> */}
-        {/* <Route path="/movie/create/:token" element={<MovieCreateWithToken />} /> */}
-        
-        {/* Game Routes - To be implemented */}
-        {/* <Route path="/game" element={<GameCreator />} /> */}
-        {/* <Route path="/game/create/:token" element={<GameCreateWithToken />} /> */}
-        
-        {/* Legacy routes for backward compatibility */}
-        <Route path="/music" element={<AlbumCreator />} />
+
+        {/* Legacy route - retrocompatibilità per vecchi link email */}
         <Route path="/create/:token" element={<AlbumCreateWithToken />} />
+
+        {/* Catch-all: redirect tutte le altre route alla home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

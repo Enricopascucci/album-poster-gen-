@@ -17,9 +17,10 @@ const CONFIG = {
   SHEET_NAME_ORDERS: "Orders",
   SHEET_NAME_LINKS: "DownloadLinks",
   TOKEN_EXPIRY_DAYS: 30,
-  BASE_URL: "https://tuodominio.com", // Modifica con il tuo dominio
-  EMAIL_FROM: "noreply@tuodominio.com",
+  BASE_URL: "https://moodlabstudio.com",
+  EMAIL_FROM: "Mood Lab Studios <moodlabstudios@gmail.com>",
   EMAIL_SUBJECT: "🎵 Il tuo Poster Musicale è pronto!",
+  SUPPORT_EMAIL: "moodlabstudios@gmail.com"
 };
 
 // ========================================
@@ -64,6 +65,14 @@ function doGet(e) {
     Logger.log("Error in doGet: " + error);
     return createResponse(500, { error: error.toString() });
   }
+}
+
+/**
+ * Handler per richieste OPTIONS (CORS preflight)
+ * Necessario per permettere richieste POST dal frontend
+ */
+function doOptions(e) {
+  return createResponse(200, {});
 }
 
 // ========================================
@@ -214,7 +223,8 @@ function handleMarkDownloaded(params) {
 // ========================================
 
 function sendWelcomeEmail(email, name, token) {
-  const createUrl = `${CONFIG.BASE_URL}/create/${token}`;
+  // Paywall-only: route aggiornata per nuovo routing
+  const createUrl = `${CONFIG.BASE_URL}/album/create/${token}`;
 
   const subject = CONFIG.EMAIL_SUBJECT;
   const htmlBody = `
@@ -261,13 +271,14 @@ function sendWelcomeEmail(email, name, token) {
             <li>Assicurati di essere soddisfatto prima di scaricarlo!</li>
           </ul>
 
-          <p>Se hai problemi, rispondi a questa email e ti aiuteremo!</p>
+          <p>Se hai problemi, contattaci a <a href="mailto:${CONFIG.SUPPORT_EMAIL}">${CONFIG.SUPPORT_EMAIL}</a></p>
 
           <p>Buon divertimento! 🎉</p>
         </div>
         <div class="footer">
           <p>Link diretto: <a href="${createUrl}">${createUrl}</a></p>
-          <p>&copy; 2025 Album Poster Generator - Tutti i diritti riservati</p>
+          <p>&copy; 2025 Mood Lab Studios - Tutti i diritti riservati</p>
+          <p>Supporto: <a href="mailto:${CONFIG.SUPPORT_EMAIL}">${CONFIG.SUPPORT_EMAIL}</a></p>
         </div>
       </div>
     </body>
@@ -285,7 +296,13 @@ Importante:
 - Puoi scaricare il poster UNA SOLA VOLTA
 - Il link scade tra ${CONFIG.TOKEN_EXPIRY_DAYS} giorni
 
+Se hai problemi, contattaci a ${CONFIG.SUPPORT_EMAIL}
+
 Buon divertimento!
+
+---
+© 2025 Mood Lab Studios
+Supporto: ${CONFIG.SUPPORT_EMAIL}
   `;
 
   MailApp.sendEmail({
@@ -293,7 +310,7 @@ Buon divertimento!
     subject: subject,
     body: plainBody,
     htmlBody: htmlBody,
-    name: "Album Poster Generator Team"
+    name: "Mood Lab Studios"
   });
 
   Logger.log(`Email sent to ${email} with token ${token}`);
@@ -352,37 +369,320 @@ function findLinkRowByToken(sheet, token) {
 }
 
 function createResponse(statusCode, data) {
+  // Note: Apps Script Web Apps automatically handle CORS when deployed with:
+  // - Execute as: Me
+  // - Who has access: Anyone
+  // Google's infrastructure adds the necessary CORS headers automatically
   return ContentService
     .createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
 // ========================================
-// 🧪 TEST FUNCTIONS (solo per debug)
+// 🧪 TEST FUNCTIONS - Per Testing Locale
 // ========================================
+// Usa queste funzioni per testare il sistema PRIMA del deploy
+// Vedi guida completa: TEST_LOCAL.md
 
 /**
- * Test webhook con dati fittizi
- * Esegui questa funzione manualmente per testare
+ * TEST 1: Simula ordine Etsy completo + invio email
+ *
+ * ISTRUZIONI:
+ * 1. Cambia buyer_email con la TUA email
+ * 2. Seleziona questa funzione nel menu dropdown
+ * 3. Clicca Run (▶️)
+ * 4. Controlla la tua email (anche spam!) per il link
+ * 5. Apri il link nel browser con npm run dev attivo
  */
 function testWebhook() {
+  Logger.log("🧪 ===== TEST ORDINE ETSY =====");
+
   const testData = {
-    receipt_id: "TEST" + Date.now(),
-    buyer_email: "test@example.com",
-    name: "Mario Rossi Test",
-    transaction_id: "TXN123456"
+    receipt_id: "TEST-ORDER-" + Date.now(),
+    buyer_email: "moodlabstudios@gmail.com", // ⚠️ CAMBIA QUESTO!
+    name: "Test User",
+    transaction_id: "TXN-TEST-" + Date.now()
   };
 
+  Logger.log("📦 Creating test order...");
+  Logger.log("   Order ID: " + testData.receipt_id);
+  Logger.log("   Email: " + testData.buyer_email);
+
   const result = handleEtsyWebhook(testData);
-  Logger.log(result.getContent());
+  const response = JSON.parse(result.getContent());
+
+  if (response.success) {
+    Logger.log("✅ Order created successfully!");
+    Logger.log("📧 Email sent to: " + testData.buyer_email);
+    Logger.log("🔗 Check your email for the link!");
+    Logger.log("");
+    Logger.log("Next steps:");
+    Logger.log("1. Check your email (also spam folder)");
+    Logger.log("2. Copy the link from the email");
+    Logger.log("3. Open it in browser with npm run dev running");
+  } else {
+    Logger.log("❌ Order creation failed!");
+    Logger.log("Error: " + response.error);
+  }
+
+  return result;
 }
 
 /**
- * Test validazione token
+ * TEST 2: Verifica stato di un token
+ * Utile per debug - controlla se un token esiste ed è valido
+ */
+function testTokenStatus(token) {
+  if (!token) {
+    // ⚠️ Incolla qui un token da testare
+    token = "PASTE_YOUR_TOKEN_HERE";
+  }
+
+  Logger.log("🔍 ===== VERIFICA TOKEN =====");
+  Logger.log("Token: " + token);
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const linksSheet = ss.getSheetByName(CONFIG.SHEET_NAME_LINKS);
+  const linkData = findLinkByToken(linksSheet, token);
+
+  if (linkData) {
+    Logger.log("✅ Token found!");
+    Logger.log("   Order ID: " + linkData.orderId);
+    Logger.log("   Email: " + linkData.customerEmail);
+    Logger.log("   Created: " + linkData.createdAt);
+    Logger.log("   Expires: " + linkData.expiresAt);
+    Logger.log("   Downloaded: " + (linkData.isDownloaded ? "YES" : "NO"));
+    Logger.log("   Status: " + linkData.status);
+
+    if (linkData.isDownloaded) {
+      Logger.log("   Downloaded at: " + linkData.downloadedAt);
+    }
+
+    // Controlla se scaduto
+    const now = new Date();
+    const expiresAt = new Date(linkData.expiresAt);
+    if (now > expiresAt) {
+      Logger.log("⚠️ Token is EXPIRED!");
+    }
+  } else {
+    Logger.log("❌ Token not found in database");
+  }
+
+  return linkData;
+}
+
+/**
+ * TEST 3: Test solo email (senza creare ordine)
+ * Utile per testare rapidamente il template email
+ */
+function testEmail() {
+  Logger.log("📧 ===== TEST EMAIL =====");
+
+  const testToken = "TEST-TOKEN-" + Date.now();
+  const testEmail = "TUA_EMAIL@gmail.com"; // ⚠️ CAMBIA QUESTO!
+  const testName = "Test User";
+
+  Logger.log("Sending test email...");
+  Logger.log("   To: " + testEmail);
+  Logger.log("   Token: " + testToken);
+
+  sendWelcomeEmail(testEmail, testName, testToken);
+
+  Logger.log("✅ Email sent!");
+  Logger.log("🔗 Test link: " + CONFIG.BASE_URL + "/album/create/" + testToken);
+  Logger.log("Note: This token is NOT in the database, so validation will fail");
+}
+
+/**
+ * TEST 4: Pulisci dati di test
+ * Rimuove tutti gli ordini di test dal database
+ */
+function cleanTestData() {
+  Logger.log("🗑️ ===== PULIZIA DATI TEST =====");
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // Pulisci Orders
+  const ordersSheet = ss.getSheetByName(CONFIG.SHEET_NAME_ORDERS);
+  const ordersData = ordersSheet.getDataRange().getValues();
+  let deletedOrders = 0;
+
+  for (let i = ordersData.length - 1; i > 0; i--) {
+    const orderId = String(ordersData[i][0]);
+    if (orderId.startsWith("TEST-")) {
+      ordersSheet.deleteRow(i + 1);
+      deletedOrders++;
+    }
+  }
+
+  Logger.log("🗑️ Deleted " + deletedOrders + " test orders");
+
+  // Pulisci DownloadLinks
+  const linksSheet = ss.getSheetByName(CONFIG.SHEET_NAME_LINKS);
+  const linksData = linksSheet.getDataRange().getValues();
+  let deletedLinks = 0;
+
+  for (let i = linksData.length - 1; i > 0; i--) {
+    const orderId = String(linksData[i][1]);
+    if (orderId.startsWith("TEST-")) {
+      linksSheet.deleteRow(i + 1);
+      deletedLinks++;
+    }
+  }
+
+  Logger.log("🗑️ Deleted " + deletedLinks + " test tokens");
+  Logger.log("✅ Cleanup complete!");
+}
+
+/**
+ * TEST 5: Verifica configurazione completa
+ * Controlla che tutto sia configurato correttamente
+ */
+function testConfiguration() {
+  Logger.log("🔧 ===== VERIFICA CONFIGURAZIONE =====");
+
+  let allGood = true;
+
+  // Verifica fogli
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ordersSheet = ss.getSheetByName(CONFIG.SHEET_NAME_ORDERS);
+  const linksSheet = ss.getSheetByName(CONFIG.SHEET_NAME_LINKS);
+
+  if (!ordersSheet) {
+    Logger.log("❌ Sheet 'Orders' not found!");
+    allGood = false;
+  } else {
+    Logger.log("✅ Sheet 'Orders' found");
+  }
+
+  if (!linksSheet) {
+    Logger.log("❌ Sheet 'DownloadLinks' not found!");
+    allGood = false;
+  } else {
+    Logger.log("✅ Sheet 'DownloadLinks' found");
+  }
+
+  // Verifica BASE_URL
+  if (CONFIG.BASE_URL.includes("localhost")) {
+    Logger.log("⚠️ BASE_URL is localhost: " + CONFIG.BASE_URL);
+    Logger.log("   Remember to change it after deploy!");
+  } else if (CONFIG.BASE_URL.includes("tuodominio.com")) {
+    Logger.log("⚠️ BASE_URL is still placeholder: " + CONFIG.BASE_URL);
+    Logger.log("   Remember to change it to your real domain!");
+    allGood = false;
+  } else {
+    Logger.log("✅ BASE_URL configured: " + CONFIG.BASE_URL);
+  }
+
+  // Verifica EMAIL_FROM
+  if (CONFIG.EMAIL_FROM.includes("tuodominio.com")) {
+    Logger.log("⚠️ EMAIL_FROM is still placeholder");
+  } else {
+    Logger.log("✅ EMAIL_FROM: " + CONFIG.EMAIL_FROM);
+  }
+
+  // Verifica TOKEN_EXPIRY_DAYS
+  Logger.log("✅ Token expiry: " + CONFIG.TOKEN_EXPIRY_DAYS + " days");
+
+  if (allGood) {
+    Logger.log("");
+    Logger.log("🎉 Configuration OK! Ready to test.");
+    Logger.log("Run testWebhook() to create a test order.");
+  } else {
+    Logger.log("");
+    Logger.log("⚠️ Some issues found. Fix them before proceeding.");
+  }
+
+  return allGood;
+}
+
+/**
+ * TEST 6: Test validazione token (rapido)
  */
 function testValidateToken() {
-  // Inserisci un token reale dal tuo sheet
-  const token = "ABC123XYZ789";
+  // ⚠️ Inserisci un token reale dal tuo sheet
+  const token = "B26B5C13E9674C19";
+
+  Logger.log("🔍 Testing token validation...");
+  Logger.log("Token: " + token);
+
   const result = handleValidateToken(token);
-  Logger.log(result.getContent());
+  const response = JSON.parse(result.getContent());
+
+  Logger.log("");
+  Logger.log("Response:");
+  Logger.log(JSON.stringify(response, null, 2));
+
+  return result;
+}
+
+/**
+ * TEST 7: Test mark-downloaded
+ * IMPORTANTE: Prima esegui testWebhook() per creare un token,
+ * poi copia il token e incollalo qui sotto
+ */
+function testMarkDownloaded() {
+  // ⚠️ Incolla qui un token VALIDO dal tuo sheet DownloadLinks
+  const token = "B26B5C13E9674C19";
+
+  Logger.log("🎯 ===== TEST MARK DOWNLOADED =====");
+  Logger.log("Token: " + token);
+
+  // Verifica che il token esista prima
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const linksSheet = ss.getSheetByName(CONFIG.SHEET_NAME_LINKS);
+  const linkData = findLinkByToken(linksSheet, token);
+
+  if (!linkData) {
+    Logger.log("❌ Token not found! Make sure you pasted a valid token.");
+    return;
+  }
+
+  Logger.log("✅ Token found in database");
+  Logger.log("   Status BEFORE: " + linkData.status);
+  Logger.log("   Downloaded BEFORE: " + linkData.isDownloaded);
+
+  // Simula la chiamata dal frontend
+  const payload = {
+    token: token,
+    posterData: {
+      albumId: "test-album-id",
+      albumName: "Test Album",
+      artistName: "Test Artist",
+      customization: {
+        bgMode: "beige",
+        frame: "none",
+        layout: "60-40",
+        radius: 8,
+        tagline: "Test tagline"
+      }
+    }
+  };
+
+  Logger.log("");
+  Logger.log("📤 Calling handleMarkDownloaded...");
+  const result = handleMarkDownloaded(payload);
+  const response = JSON.parse(result.getContent());
+
+  Logger.log("");
+  Logger.log("📥 Response:");
+  Logger.log(JSON.stringify(response, null, 2));
+
+  // Verifica che sia stato aggiornato
+  const updatedLinkData = findLinkByToken(linksSheet, token);
+  Logger.log("");
+  Logger.log("🔍 Status AFTER:");
+  Logger.log("   Status: " + updatedLinkData.status);
+  Logger.log("   Downloaded: " + updatedLinkData.isDownloaded);
+  Logger.log("   Downloaded At: " + updatedLinkData.downloadedAt);
+
+  if (updatedLinkData.isDownloaded === "TRUE" || updatedLinkData.isDownloaded === true) {
+    Logger.log("");
+    Logger.log("✅ SUCCESS! Token was marked as downloaded.");
+  } else {
+    Logger.log("");
+    Logger.log("❌ FAILED! Token was NOT marked as downloaded.");
+  }
+
+  return result;
 }

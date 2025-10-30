@@ -2,10 +2,13 @@
  * 🎫 Token Service
  *
  * Gestisce la validazione dei token e il tracking dei download
+ * Supporta diversi tipi di poster: album, movie, game
  */
 
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api';
+import type { PosterDownloadMetadata } from '../types/poster';
+import type { PosterType } from '../config/posterTypes';
 
 export interface TokenValidationResponse {
   valid: boolean;
@@ -15,24 +18,29 @@ export interface TokenValidationResponse {
   expiresAt?: string;
   orderId?: string;
   downloadedAt?: string;
+  posterType?: PosterType;
 }
 
 export interface MarkDownloadedPayload {
   token: string;
-  posterData: {
-    albumId: string;
-    albumName: string;
-    artistName: string;
-    customization?: Record<string, any>;
-  };
+  posterData: PosterDownloadMetadata;
 }
 
 /**
  * Valida un token chiamando il Google Apps Script
+ * @param token - Token univoco di acquisto
+ * @param posterType - Tipo di poster (album, movie, game) - opzionale per retrocompatibilità
  */
-export async function validateToken(token: string): Promise<TokenValidationResponse> {
+export async function validateToken(
+  token: string,
+  posterType?: PosterType
+): Promise<TokenValidationResponse> {
   try {
-    const response = await axios.get(API_ENDPOINTS.validateToken(token), {
+    const url = posterType
+      ? `${API_ENDPOINTS.validateToken(token)}&posterType=${posterType}`
+      : API_ENDPOINTS.validateToken(token);
+
+    const response = await axios.get(url, {
       timeout: 10000,
     });
 
@@ -56,6 +64,10 @@ export async function validateToken(token: string): Promise<TokenValidationRespo
  * Marca un token come scaricato
  */
 export async function markDownloaded(payload: MarkDownloadedPayload): Promise<boolean> {
+  console.log('🎯 [markDownloaded] Starting...');
+  console.log('📤 [markDownloaded] Payload:', payload);
+  console.log('🔗 [markDownloaded] API URL:', API_ENDPOINTS.markDownloaded());
+
   try {
     const response = await axios.post(API_ENDPOINTS.markDownloaded(), payload, {
       timeout: 10000,
@@ -64,9 +76,15 @@ export async function markDownloaded(payload: MarkDownloadedPayload): Promise<bo
       },
     });
 
+    console.log('✅ [markDownloaded] Success! Response:', response.data);
     return response.data.success === true;
   } catch (error) {
-    console.error('Error marking download:', error);
+    console.error('❌ [markDownloaded] Error:', error);
+    if (axios.isAxiosError(error)) {
+      console.error('   Status:', error.response?.status);
+      console.error('   Data:', error.response?.data);
+      console.error('   Message:', error.message);
+    }
     return false;
   }
 }
