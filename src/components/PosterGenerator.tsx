@@ -304,7 +304,7 @@ const fontVars = useMemo<React.CSSProperties>(() => {
   const isInitialLoading = !imageReady || loadingColors;
 
   return (
-    <div className="w-full max-w-[1500px] mx-auto p-4 md:p-6">
+    <div className="w-full max-w-[1500px] mx-auto p-2 md:p-4 lg:p-6">
       {isInitialLoading && <LoadingOverlay text="Preparing poster..." />}
 
       <ToastContainer toasts={toasts} onRemove={removeToast} />
@@ -318,7 +318,7 @@ const fontVars = useMemo<React.CSSProperties>(() => {
         tokenMode={tokenMode}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-4 md:gap-6 lg:gap-8 items-start">
         <PosterCanvas
           album={album}
           posterRef={posterRef}

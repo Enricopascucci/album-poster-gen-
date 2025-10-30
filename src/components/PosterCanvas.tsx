@@ -75,14 +75,14 @@ export function PosterCanvas({
 <div
   ref={posterRef}
   id="poster"
-  className="relative w-full max-w-[760px] rounded-xl overflow-hidden poster"
+  className="relative w-full max-w-[420px] md:max-w-[520px] lg:max-w-[680px] xl:max-w-[760px] rounded-xl overflow-hidden poster"
   style={{
     ...themeVars,
     ...fontVars,
     ...frameVars,
     boxShadow: 'var(--frame-shadow)',
     fontFamily: 'var(--family)',
-    fontWeight: 'var(--fw-body)',      
+    fontWeight: 'var(--fw-body)',
   }}
 >
         {/* sfondo */}
