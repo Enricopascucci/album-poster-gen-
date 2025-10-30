@@ -17,7 +17,7 @@ const CONFIG = {
   SHEET_NAME_ORDERS: "Orders",
   SHEET_NAME_LINKS: "DownloadLinks",
   TOKEN_EXPIRY_DAYS: 30,
-  BASE_URL: "https://moodlabstudio.com",
+  BASE_URL: "https://album-poster-gen.vercel.app", // Temporary Vercel URL - Change to https://moodlabstudio.com when DNS is ready
   EMAIL_FROM: "Mood Lab Studios <moodlabstudios@gmail.com>",
   EMAIL_SUBJECT: "🎵 Il tuo Poster Musicale è pronto!",
   SUPPORT_EMAIL: "moodlabstudios@gmail.com"
