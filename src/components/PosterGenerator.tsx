@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Album, Track } from "../types/album";
 import { exportAsPNG } from "../utils/exportPoster";
 import { getTotalDuration } from "../utils/colorExtractor";
@@ -184,6 +184,30 @@ const fontVars = useMemo<React.CSSProperties>(() => {
   const [showMockupModal, setShowMockupModal] = useState(false);
   const canDownload =
     !downloading && !loadingColors && paletteReady && imageReady && !hasDownloaded;
+
+  // Controlla lo stato del token all'avvio (in tokenMode)
+  useEffect(() => {
+    if (!tokenMode || !token) return;
+
+    const checkTokenStatus = async () => {
+      try {
+        const { validateToken } = await import('../services/tokenService');
+        const result = await validateToken(token);
+
+        console.log('🔍 [PosterGenerator] Token validation on mount:', result);
+
+        // Se il token è già stato usato, blocca i download
+        if (result.status === 'used' || result.error?.includes('già scaricato')) {
+          console.log('⚠️ [PosterGenerator] Token already used, disabling downloads');
+          setHasDownloaded(true);
+        }
+      } catch (error) {
+        console.error('❌ [PosterGenerator] Error checking token status:', error);
+      }
+    };
+
+    checkTokenStatus();
+  }, [tokenMode, token]);
 
   // Apre la modale con i mockup
   const handleDownload = useCallback(() => {
