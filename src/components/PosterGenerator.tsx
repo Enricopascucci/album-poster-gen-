@@ -217,7 +217,7 @@ const fontVars = useMemo<React.CSSProperties>(() => {
         console.log('🔍 [PosterGenerator] Token validation on mount:', result);
 
         // Se il token è già stato usato, blocca i download
-        if (result.status === 'used' || result.error?.includes('già scaricato')) {
+        if (result.status === 'used' || result.error?.includes('already downloaded')) {
           console.log('⚠️ [PosterGenerator] Token already used, disabling downloads');
           setHasDownloaded(true);
         }

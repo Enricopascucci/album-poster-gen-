@@ -158,7 +158,7 @@ function handleValidateToken(token) {
   if (!linkData) {
     return createResponse(404, {
       valid: false,
-      error: "Token non trovato"
+      error: "Token not found"
     });
   }
 
@@ -166,7 +166,7 @@ function handleValidateToken(token) {
   if (linkData.isDownloaded === "TRUE" || linkData.isDownloaded === true) {
     return createResponse(403, {
       valid: false,
-      error: "Poster già scaricato",
+      error: "Poster already downloaded",
       status: "used",
       downloadedAt: linkData.downloadedAt
     });
@@ -178,7 +178,7 @@ function handleValidateToken(token) {
   if (now > expiryDate) {
     return createResponse(403, {
       valid: false,
-      error: "Link scaduto",
+      error: "Link expired",
       status: "expired",
       expiresAt: linkData.expiresAt
     });
@@ -208,7 +208,7 @@ function handleMarkDownloaded(params) {
   const rowIndex = findLinkRowByToken(linksSheet, token);
 
   if (!rowIndex) {
-    return createResponse(404, { error: "Token non trovato" });
+    return createResponse(404, { error: "Token not found" });
   }
 
   // Aggiorna riga

@@ -79,20 +79,20 @@ export function CreateWithToken() {
                 </svg>
               </div>
               <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">
-                Poster già scaricato
+                Poster Already Downloaded
               </h1>
               <p className="text-gray-600 text-center mb-6">
-                Questo link è già stato utilizzato per scaricare un poster.
+                This link has already been used to download a poster.
               </p>
               {tokenData.downloadedAt && (
                 <p className="text-sm text-gray-500 text-center mb-4">
-                  Scaricato il: {new Date(tokenData.downloadedAt).toLocaleString('it-IT')}
+                  Downloaded on: {new Date(tokenData.downloadedAt).toLocaleString('it-IT')}
                 </p>
               )}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-blue-800">
-                  <strong>Hai perso il file?</strong><br />
-                  Contattaci via email e ti aiuteremo a recuperarlo.
+                  <strong>Lost your file?</strong><br />
+                  Contact us via email and we'll help you recover it.
                 </p>
               </div>
             </>
@@ -104,20 +104,20 @@ export function CreateWithToken() {
                 </svg>
               </div>
               <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">
-                Link scaduto
+                Link Expired
               </h1>
               <p className="text-gray-600 text-center mb-6">
-                Questo link è scaduto e non può più essere utilizzato.
+                This link has expired and can no longer be used.
               </p>
               {tokenData.expiresAt && (
                 <p className="text-sm text-gray-500 text-center mb-4">
-                  Scaduto il: {new Date(tokenData.expiresAt).toLocaleString('it-IT')}
+                  Expired on: {new Date(tokenData.expiresAt).toLocaleString('it-IT')}
                 </p>
               )}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-blue-800">
-                  <strong>Serve aiuto?</strong><br />
-                  Contattaci via email per richiedere un nuovo link.
+                  <strong>Need help?</strong><br />
+                  Contact us via email to request a new link.
                 </p>
               </div>
             </>
@@ -129,17 +129,17 @@ export function CreateWithToken() {
                 </svg>
               </div>
               <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">
-                Link non valido
+                Invalid Link
               </h1>
               <p className="text-gray-600 text-center mb-6">
-                {tokenData?.error || 'Questo link non è valido o non esiste.'}
+                {tokenData?.error || 'This link is invalid or does not exist.'}
               </p>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-blue-800">
-                  <strong>Verifica:</strong><br />
-                  - Di aver copiato il link completo dall'email<br />
-                  - Che il link non contenga spazi o caratteri extra<br />
-                  - Di aver acquistato il prodotto su Etsy
+                  <strong>Please check:</strong><br />
+                  - You copied the complete link from the email<br />
+                  - The link doesn't contain spaces or extra characters<br />
+                  - You purchased the product on Etsy
                 </p>
               </div>
             </>
@@ -149,7 +149,7 @@ export function CreateWithToken() {
             onClick={() => navigate('/')}
             className="w-full mt-6 bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium"
           >
-            Torna alla Home
+            Back to Home
           </button>
         </div>
       </div>
@@ -168,25 +168,25 @@ export function CreateWithToken() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
-                <span className="font-medium">Poster già scaricato - Link non più utilizzabile</span>
+                <span className="font-medium">Poster Already Downloaded - Link non più utilizzabile</span>
               </>
             ) : (
               <>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="font-medium">Link valido - Puoi creare il tuo poster</span>
+                <span className="font-medium">Valid Link - Create Your Poster</span>
               </>
             )}
           </div>
           {tokenData.expiresAt && !downloadCompleted && (
             <span className="text-sm opacity-90">
-              Scade il: {new Date(tokenData.expiresAt).toLocaleDateString('it-IT')}
+              Expires: {new Date(tokenData.expiresAt).toLocaleDateString('en-US')}
             </span>
           )}
           {downloadCompleted && tokenData.downloadedAt && (
             <span className="text-sm opacity-90">
-              Scaricato il: {new Date(tokenData.downloadedAt).toLocaleDateString('it-IT', {
+              Downloaded on: {new Date(tokenData.downloadedAt).toLocaleDateString('en-US', {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric',

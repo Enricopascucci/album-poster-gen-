@@ -55,7 +55,7 @@ export async function validateToken(
     return {
       valid: false,
       status: 'invalid',
-      error: 'Errore di connessione al server. Riprova più tardi.',
+      error: 'Server connection error. Please try again later.',
     };
   }
 }
