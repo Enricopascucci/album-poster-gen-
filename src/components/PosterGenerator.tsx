@@ -12,6 +12,8 @@ import type { BgMode } from "./PosterBgPicker";
 import type { FontPickerValue } from "./FontPicker";
 import { LoadingOverlay } from "./Spinner";
 import { MockupGalleryModal } from "./MockupGalleryModal";
+import { ToastContainer } from "./Toast";
+import type { ToastType } from "./Toast";
 import "./PosterStyles.css";
 
 interface PosterGeneratorProps {
@@ -184,8 +186,19 @@ const fontVars = useMemo<React.CSSProperties>(() => {
   const [hasDownloaded, setHasDownloaded] = useState(false);
   const [checkingToken, setCheckingToken] = useState(tokenMode && !!token); // Blocca mentre controlliamo
   const [showMockupModal, setShowMockupModal] = useState(false);
+  const [toasts, setToasts] = useState<Array<{ id: string; message: string; type: ToastType }>>([]);
   const canDownload =
     !downloading && !loadingColors && paletteReady && imageReady && !hasDownloaded && !checkingToken;
+
+  // Toast helper
+  const showToast = useCallback((message: string, type: ToastType) => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, message, type }]);
+  }, []);
+
+  const removeToast = useCallback((id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
 
   // Controlla lo stato del token all'avvio (in tokenMode)
   useEffect(() => {
@@ -221,19 +234,8 @@ const fontVars = useMemo<React.CSSProperties>(() => {
   // Apre la modale con i mockup
   const handleDownload = useCallback(() => {
     if (!posterRef.current) return;
-
-    // In tokenMode, conferma prima di aprire la modale
-    if (tokenMode && !hasDownloaded) {
-      const confirmed = window.confirm(
-        '⚠️ ATTENZIONE: Puoi scaricare il poster UNA SOLA VOLTA.\n\n' +
-        'Sei sicuro di voler procedere?\n\n' +
-        'Assicurati di essere soddisfatto della personalizzazione!'
-      );
-      if (!confirmed) return;
-    }
-
     setShowMockupModal(true);
-  }, [tokenMode, hasDownloaded]);
+  }, []);
 
   // Download effettivo del poster (chiamato dalla modale)
   const handleConfirmDownload = useCallback(async () => {
@@ -282,29 +284,21 @@ const fontVars = useMemo<React.CSSProperties>(() => {
           console.log('✅ [PosterGenerator] Token marked as downloaded successfully!');
           setHasDownloaded(true);
           onDownloadComplete?.(); // Notifica il parent
-          alert(
-            '✅ Download completato!\n\n' +
-            'Il tuo poster è stato scaricato con successo.\n' +
-            'Questo link non può più essere utilizzato.'
-          );
+          showToast('Download completed! Your poster has been saved. This link can no longer be used.', 'success');
         } else {
           console.error('❌ [PosterGenerator] Failed to mark token as downloaded');
-          alert(
-            '⚠️ Download completato ma si è verificato un errore.\n\n' +
-            'Il poster è stato salvato sul tuo computer,\n' +
-            'ma potrebbe essere necessario contattare il supporto.'
-          );
+          showToast('Download completed but there was an error tracking it. Please contact support if needed.', 'warning');
         }
       } else {
         console.log('ℹ️ [PosterGenerator] TokenMode is OFF or no token provided');
       }
     } catch (error) {
       console.error('Export error:', error);
-      alert("Export fallito. Controlla CORS immagini o riduci la qualità.");
+      showToast('Export failed. Please check your internet connection or try again.', 'error');
     } finally {
       setDownloading(false);
     }
-  }, [album, tokenMode, token, hasDownloaded, bgMode, frame, layout, radius, tagline]);
+  }, [album, tokenMode, token, onDownloadComplete, bgMode, frame, layout, radius, tagline, showToast]);
 
   // Mostra spinner se sta caricando l'immagine o i colori
   const isInitialLoading = !imageReady || loadingColors;
@@ -313,12 +307,15 @@ const fontVars = useMemo<React.CSSProperties>(() => {
     <div className="w-full max-w-[1500px] mx-auto p-4 md:p-6">
       {isInitialLoading && <LoadingOverlay text="Preparing poster..." />}
 
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+
       <MockupGalleryModal
         isOpen={showMockupModal}
         onClose={() => setShowMockupModal(false)}
         onConfirmDownload={handleConfirmDownload}
         posterRef={posterRef}
         albumName={album?.name ?? "poster"}
+        tokenMode={tokenMode}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-8 items-start">

@@ -19,7 +19,7 @@ const CONFIG = {
   TOKEN_EXPIRY_DAYS: 30,
   BASE_URL: "https://moodlabstudio.com",
   EMAIL_FROM: "Mood Lab Studios <moodlabstudios@gmail.com>",
-  EMAIL_SUBJECT: "🎵 Il tuo Poster Musicale è pronto!",
+  EMAIL_SUBJECT: "Your Music Poster is Ready",
   SUPPORT_EMAIL: "moodlabstudios@gmail.com"
 };
 
@@ -237,54 +237,72 @@ function sendWelcomeEmail(email, name, token) {
     <!DOCTYPE html>
     <html>
     <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: linear-gradient(135deg, #1DB954 0%, #1ed760 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-        .button { display: inline-block; background: #1DB954; color: white; padding: 15px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; margin: 20px 0; }
-        .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
-        .highlight { background: #fff; padding: 15px; border-left: 4px solid #1DB954; margin: 20px 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.6; color: #1a1a1a; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 40px auto; background: #ffffff; }
+        .header { padding: 48px 40px; text-align: center; border-bottom: 1px solid #e5e5e5; }
+        .logo { font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; }
+        .subtitle { font-size: 15px; color: #666; font-weight: 400; }
+        .content { padding: 48px 40px; }
+        .greeting { font-size: 16px; color: #1a1a1a; margin-bottom: 24px; }
+        .info-box { background: #f9f9f9; border-radius: 8px; padding: 24px; margin: 32px 0; }
+        .info-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-text { font-size: 15px; color: #666; line-height: 1.6; }
+        .button-container { text-align: center; margin: 40px 0; }
+        .button { display: inline-block; background: #1a1a1a; color: #ffffff; padding: 16px 40px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 15px; transition: all 0.2s; }
+        .button:hover { background: #333; }
+        .warning { background: #fff9e6; border-left: 3px solid #ffb800; padding: 20px; margin: 32px 0; border-radius: 4px; }
+        .warning-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+        .warning-text { font-size: 14px; color: #666; line-height: 1.6; }
+        .footer { padding: 32px 40px; text-align: center; border-top: 1px solid #e5e5e5; background: #fafafa; }
+        .footer-text { font-size: 13px; color: #999; margin: 4px 0; }
+        .footer-link { color: #666; text-decoration: none; }
+        .footer-link:hover { color: #1a1a1a; }
       </style>
     </head>
     <body>
       <div class="container">
         <div class="header">
-          <h1>🎵 Grazie per il tuo ordine!</h1>
+          <div class="logo">Mood Lab Studios</div>
+          <div class="subtitle">Custom Music Posters</div>
         </div>
-        <div class="content">
-          <p>Ciao <strong>${name}</strong>,</p>
-          <p>Grazie per aver acquistato il tuo poster musicale personalizzato! Siamo entusiasti di aiutarti a creare qualcosa di unico.</p>
 
-          <div class="highlight">
-            <strong>📝 Cosa fare ora:</strong>
-            <ol>
-              <li>Clicca sul pulsante qui sotto</li>
-              <li>Cerca il tuo album musicale preferito</li>
-              <li>Personalizza il poster come preferisci</li>
-              <li>Scarica il tuo poster in alta risoluzione</li>
-            </ol>
+        <div class="content">
+          <p class="greeting">Hi <strong>${name}</strong>,</p>
+          <p class="greeting">Thank you for your purchase. You're ready to create your custom music poster.</p>
+
+          <div class="info-box">
+            <div class="info-title">How it works</div>
+            <div class="info-text">
+              1. Click the button below<br>
+              2. Search for your favorite album<br>
+              3. Customize your poster<br>
+              4. Download in high resolution
+            </div>
           </div>
 
-          <p style="text-align: center;">
-            <a href="${createUrl}" class="button">🎨 Crea il tuo Poster</a>
-          </p>
+          <div class="button-container">
+            <a href="${createUrl}" class="button">Create Your Poster</a>
+          </div>
 
-          <p><strong>⚠️ Importante:</strong></p>
-          <ul>
-            <li>Puoi scaricare il poster <strong>una sola volta</strong></li>
-            <li>Il link scade tra <strong>${CONFIG.TOKEN_EXPIRY_DAYS} giorni</strong></li>
-            <li>Assicurati di essere soddisfatto prima di scaricarlo!</li>
-          </ul>
+          <div class="warning">
+            <div class="warning-title">Important</div>
+            <div class="warning-text">
+              • You can download your poster <strong>one time only</strong><br>
+              • This link expires in <strong>${CONFIG.TOKEN_EXPIRY_DAYS} days</strong><br>
+              • Make sure you're satisfied with your design before downloading
+            </div>
+          </div>
 
-          <p>Se hai problemi, contattaci a <a href="mailto:${CONFIG.SUPPORT_EMAIL}">${CONFIG.SUPPORT_EMAIL}</a></p>
-
-          <p>Buon divertimento! 🎉</p>
+          <p class="greeting">Questions? Contact us at <a href="mailto:${CONFIG.SUPPORT_EMAIL}" style="color: #1a1a1a;">${CONFIG.SUPPORT_EMAIL}</a></p>
         </div>
+
         <div class="footer">
-          <p>Link diretto: <a href="${createUrl}">${createUrl}</a></p>
-          <p>&copy; 2025 Mood Lab Studios - Tutti i diritti riservati</p>
-          <p>Supporto: <a href="mailto:${CONFIG.SUPPORT_EMAIL}">${CONFIG.SUPPORT_EMAIL}</a></p>
+          <p class="footer-text">&copy; 2025 Mood Lab Studios. All rights reserved.</p>
+          <p class="footer-text"><a href="mailto:${CONFIG.SUPPORT_EMAIL}" class="footer-link">${CONFIG.SUPPORT_EMAIL}</a></p>
         </div>
       </div>
     </body>
@@ -292,23 +310,28 @@ function sendWelcomeEmail(email, name, token) {
   `;
 
   const plainBody = `
-Ciao ${name},
+Hi ${name},
 
-Grazie per aver acquistato il tuo poster musicale personalizzato!
+Thank you for your purchase. You're ready to create your custom music poster.
 
-Clicca qui per creare il tuo poster: ${createUrl}
+Create your poster: ${createUrl}
 
-Importante:
-- Puoi scaricare il poster UNA SOLA VOLTA
-- Il link scade tra ${CONFIG.TOKEN_EXPIRY_DAYS} giorni
+How it works:
+1. Click the link above
+2. Search for your favorite album
+3. Customize your poster
+4. Download in high resolution
 
-Se hai problemi, contattaci a ${CONFIG.SUPPORT_EMAIL}
+Important:
+• You can download your poster ONE TIME ONLY
+• This link expires in ${CONFIG.TOKEN_EXPIRY_DAYS} days
+• Make sure you're satisfied with your design before downloading
 
-Buon divertimento!
+Questions? Contact us at ${CONFIG.SUPPORT_EMAIL}
 
 ---
 © 2025 Mood Lab Studios
-Supporto: ${CONFIG.SUPPORT_EMAIL}
+${CONFIG.SUPPORT_EMAIL}
   `;
 
   MailApp.sendEmail({
