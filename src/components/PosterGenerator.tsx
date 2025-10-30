@@ -181,13 +181,19 @@ const fontVars = useMemo<React.CSSProperties>(() => {
   // ====== Export ======
   const [downloading, setDownloading] = useState(false);
   const [hasDownloaded, setHasDownloaded] = useState(false);
+  const [checkingToken, setCheckingToken] = useState(tokenMode && !!token); // Blocca mentre controlliamo
   const [showMockupModal, setShowMockupModal] = useState(false);
   const canDownload =
-    !downloading && !loadingColors && paletteReady && imageReady && !hasDownloaded;
+    !downloading && !loadingColors && paletteReady && imageReady && !hasDownloaded && !checkingToken;
 
   // Controlla lo stato del token all'avvio (in tokenMode)
   useEffect(() => {
-    if (!tokenMode || !token) return;
+    if (!tokenMode || !token) {
+      setCheckingToken(false);
+      return;
+    }
+
+    setCheckingToken(true);
 
     const checkTokenStatus = async () => {
       try {
@@ -203,6 +209,8 @@ const fontVars = useMemo<React.CSSProperties>(() => {
         }
       } catch (error) {
         console.error('❌ [PosterGenerator] Error checking token status:', error);
+      } finally {
+        setCheckingToken(false);
       }
     };
 
