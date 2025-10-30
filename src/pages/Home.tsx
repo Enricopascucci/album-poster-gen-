@@ -5,8 +5,6 @@
  * 100% dietro paywall - nessuna demo gratuita.
  */
 
-import starboyPoster from '../assets/music/starboy_poster.png';
-
 export function Home() {
   const ETSY_SHOP_URL = 'https://www.etsy.com/shop/Moodlabstudios';
 
@@ -60,17 +58,6 @@ export function Home() {
             >
               Buy Now on Etsy
             </a>
-
-            {/* Preview Image */}
-            <div className="max-w-[500px] mx-auto">
-              {starboyPoster && (
-                <img
-                  src={starboyPoster}
-                  alt="Custom album poster example"
-                  className="w-full h-auto rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.25)] border border-gray-200"
-                />
-              )}
-            </div>
           </div>
         </section>
 
