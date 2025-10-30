@@ -62,18 +62,22 @@ export async function validateToken(
 
 /**
  * Marca un token come scaricato
+ * Usa GET invece di POST per evitare problemi CORS con Google Apps Script
  */
 export async function markDownloaded(payload: MarkDownloadedPayload): Promise<boolean> {
   console.log('🎯 [markDownloaded] Starting...');
   console.log('📤 [markDownloaded] Payload:', payload);
-  console.log('🔗 [markDownloaded] API URL:', API_ENDPOINTS.markDownloaded());
 
   try {
-    const response = await axios.post(API_ENDPOINTS.markDownloaded(), payload, {
+    // Usa GET invece di POST per evitare CORS preflight
+    const url = `${API_ENDPOINTS.markDownloaded()}` +
+      `&token=${encodeURIComponent(payload.token)}` +
+      `&posterData=${encodeURIComponent(JSON.stringify(payload.posterData))}`;
+
+    console.log('🔗 [markDownloaded] API URL:', url);
+
+    const response = await axios.get(url, {
       timeout: 10000,
-      headers: {
-        'Content-Type': 'application/json',
-      },
     });
 
     console.log('✅ [markDownloaded] Success! Response:', response.data);

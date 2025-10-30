@@ -17,7 +17,7 @@ const CONFIG = {
   SHEET_NAME_ORDERS: "Orders",
   SHEET_NAME_LINKS: "DownloadLinks",
   TOKEN_EXPIRY_DAYS: 30,
-  BASE_URL: "https://album-poster-gen.vercel.app", // Temporary Vercel URL - Change to https://moodlabstudio.com when DNS is ready
+  BASE_URL: "https://moodlabstudio.com",
   EMAIL_FROM: "Mood Lab Studios <moodlabstudios@gmail.com>",
   EMAIL_SUBJECT: "🎵 Il tuo Poster Musicale è pronto!",
   SUPPORT_EMAIL: "moodlabstudios@gmail.com"
@@ -58,6 +58,12 @@ function doGet(e) {
     if (action === "validate-token") {
       const token = e.parameter.token;
       return handleValidateToken(token);
+    }
+
+    if (action === "mark-downloaded") {
+      const token = e.parameter.token;
+      const posterData = e.parameter.posterData ? JSON.parse(e.parameter.posterData) : {};
+      return handleMarkDownloaded({ token, posterData });
     }
 
     return createResponse(400, { error: "Invalid action" });
