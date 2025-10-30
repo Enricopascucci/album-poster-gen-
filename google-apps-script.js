@@ -162,8 +162,8 @@ function handleValidateToken(token) {
     });
   }
 
-  // Controlla se già scaricato
-  if (linkData.isDownloaded === "TRUE") {
+  // Controlla se già scaricato (gestisce sia booleano che stringa)
+  if (linkData.isDownloaded === "TRUE" || linkData.isDownloaded === true) {
     return createResponse(403, {
       valid: false,
       error: "Poster già scaricato",

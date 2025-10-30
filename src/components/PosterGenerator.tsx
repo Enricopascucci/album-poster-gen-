@@ -19,9 +19,10 @@ interface PosterGeneratorProps {
   onBack: () => void;
   tokenMode?: boolean;
   token?: string;
+  onDownloadComplete?: () => void;
 }
 
-export function PosterGenerator({ album, onBack, tokenMode = false, token }: PosterGeneratorProps) {
+export function PosterGenerator({ album, onBack, tokenMode = false, token, onDownloadComplete }: PosterGeneratorProps) {
   const posterRef = useRef<HTMLDivElement | null>(null);
 
   // ====== Personalizzazioni ======
@@ -280,6 +281,7 @@ const fontVars = useMemo<React.CSSProperties>(() => {
         if (success) {
           console.log('✅ [PosterGenerator] Token marked as downloaded successfully!');
           setHasDownloaded(true);
+          onDownloadComplete?.(); // Notifica il parent
           alert(
             '✅ Download completato!\n\n' +
             'Il tuo poster è stato scaricato con successo.\n' +

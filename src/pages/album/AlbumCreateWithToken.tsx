@@ -18,6 +18,7 @@ export function AlbumCreateWithToken() {
   const [validationStatus, setValidationStatus] = useState<'loading' | 'valid' | 'invalid'>('loading');
   const [tokenData, setTokenData] = useState<TokenValidationResponse | null>(null);
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
+  const [downloadCompleted, setDownloadCompleted] = useState(false);
 
   useEffect(() => {
     if (!token) {
@@ -158,17 +159,39 @@ export function AlbumCreateWithToken() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header con info token */}
-      <div className="bg-green-500 text-white py-3 px-4 shadow-md">
+      <div className={`${downloadCompleted ? 'bg-orange-500' : 'bg-green-500'} text-white py-3 px-4 shadow-md`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span className="font-medium">Link valido - Puoi creare il tuo poster</span>
+            {downloadCompleted ? (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span className="font-medium">Poster già scaricato - Link non più utilizzabile</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="font-medium">Link valido - Puoi creare il tuo poster</span>
+              </>
+            )}
           </div>
-          {tokenData.expiresAt && (
+          {tokenData.expiresAt && !downloadCompleted && (
             <span className="text-sm opacity-90">
               Scade il: {new Date(tokenData.expiresAt).toLocaleDateString('it-IT')}
+            </span>
+          )}
+          {downloadCompleted && tokenData.downloadedAt && (
+            <span className="text-sm opacity-90">
+              Scaricato il: {new Date(tokenData.downloadedAt).toLocaleDateString('it-IT', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
             </span>
           )}
         </div>
@@ -181,6 +204,7 @@ export function AlbumCreateWithToken() {
           onBack={handleBack}
           tokenMode={true}
           token={token}
+          onDownloadComplete={() => setDownloadCompleted(true)}
         />
       ) : (
         <AlbumSearch
