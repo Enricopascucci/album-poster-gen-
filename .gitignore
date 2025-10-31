@@ -15,6 +15,9 @@ dist-ssr
 # Environment variables
 .env
 
+# Google Apps Script (contains sensitive data)
+google-apps-script.js
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

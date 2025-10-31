@@ -134,7 +134,7 @@ export function PosterCanvas({
 <div
   ref={posterRef}
   id="poster"
-  className="relative w-full max-w-[420px] md:max-w-[520px] lg:max-w-[680px] xl:max-w-[760px] rounded-xl overflow-hidden poster"
+  className="relative w-full max-w-[420px] md:max-w-[520px] lg:max-w-[680px] xl:max-w-[760px] overflow-hidden poster"
   style={{
     ...themeVars,
     ...fontVars,
