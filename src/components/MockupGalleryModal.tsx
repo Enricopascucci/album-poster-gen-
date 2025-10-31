@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { XIcon, DownloadIcon, ChevronLeft, ChevronRight } from "./icons";
 
 interface MockupGalleryModalProps {
@@ -59,33 +59,22 @@ export function MockupGalleryModal({
 }: MockupGalleryModalProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [posterImage, setPosterImage] = useState<string>("");
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Cattura il poster come immagine quando la modale si apre
   useEffect(() => {
-    if (isOpen && posterRef.current && canvasRef.current) {
+    if (isOpen && posterRef.current) {
       const posterElement = posterRef.current;
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
 
-      // Imposta dimensioni canvas (rapporto 2:3)
-      const width = 800;
-      const height = 1200;
-      canvas.width = width;
-      canvas.height = height;
-
-      // Usa html2canvas per catturare il poster
-      import("html2canvas").then(({ default: html2canvas }) => {
-        html2canvas(posterElement, {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: null,
-        }).then((posterCanvas) => {
-          // Disegna sul canvas ridimensionando
-          ctx.drawImage(posterCanvas, 0, 0, width, height);
-          setPosterImage(canvas.toDataURL("image/png"));
+      // Usa html-to-image per catturare il poster
+      import("html-to-image").then(({ toPng }) => {
+        toPng(posterElement, {
+          pixelRatio: 2,
+          cacheBust: true,
+          skipFonts: false,
+        }).then((dataUrl) => {
+          setPosterImage(dataUrl);
+        }).catch((error) => {
+          console.error("Error capturing poster:", error);
         });
       });
     }
@@ -118,8 +107,6 @@ export function MockupGalleryModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <canvas ref={canvasRef} className="hidden" />
-
       {/* Close button */}
       <button
         onClick={onClose}

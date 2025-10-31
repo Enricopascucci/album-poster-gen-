@@ -2,7 +2,7 @@
 // Export “a prova di stretch”: clona off-screen, dà width/height fissi al poster,
 // e calcola le dimensioni dell’immagine artwork in base a contain/cover.
 
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 
 type ExportOpts = {
   scale?: number;             // moltiplicatore qualità (default 4)
@@ -107,18 +107,16 @@ export async function exportAsPNG(
     try { await (document as any).fonts?.ready; } catch {}
 
     // 5) rasterizza clone
-    const canvas = await html2canvas(clone, {
-      backgroundColor: background,
-      useCORS: true,
-      allowTaint: false,
-      scale: scale * (window.devicePixelRatio || 1),
-      width, height,
-      windowWidth: Math.max(document.documentElement.scrollWidth, window.innerWidth),
-      windowHeight: Math.max(document.documentElement.scrollHeight, window.innerHeight),
+    const dataURL = await toPng(clone, {
+      backgroundColor: background || undefined,
+      pixelRatio: scale * (window.devicePixelRatio || 1),
+      width,
+      height,
+      cacheBust: true,
+      skipFonts: false,
     });
 
     // 6) download
-    const dataURL = canvas.toDataURL('image/png');
     const link = document.createElement('a');
     link.href = dataURL;
     link.download = filename;

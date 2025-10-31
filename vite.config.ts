@@ -12,7 +12,7 @@ export default defineConfig({
           react: ['react', 'react-dom'],
           router: ['react-router-dom'],
           vendor: ['axios'],
-          canvas: ['html2canvas'],
+          canvas: ['html-to-image'],
           color: ['colorthief'],
         },
       },

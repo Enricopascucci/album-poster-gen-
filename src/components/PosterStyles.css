@@ -105,8 +105,20 @@
 .poster-blur-layer {
   background-position: center;
   background-size: cover;
-  filter: blur(28px);
+  filter: blur(8px);
   transform: scale(1.08); /* evita bordi trasparenti dopo blur */
+}
+.poster-blur-medium-layer {
+  background-position: center;
+  background-size: cover;
+  filter: blur(16px);
+  transform: scale(1.08);
+}
+.poster-blur-intense-layer {
+  background-position: center;
+  background-size: cover;
+  filter: blur(28px);
+  transform: scale(1.08);
 }
 
 /* Tipografia adaptive */
@@ -118,7 +130,9 @@
 }
 
 .poster { background: var(--poster-bg); }
-.poster-blur-layer { background-position:center; background-size:cover; filter: blur(28px); transform: scale(1.08); }
+.poster-blur-layer { background-position:center; background-size:cover; filter: blur(8px); transform: scale(1.08); }
+.poster-blur-medium-layer { background-position:center; background-size:cover; filter: blur(16px); transform: scale(1.08); }
+.poster-blur-intense-layer { background-position:center; background-size:cover; filter: blur(28px); transform: scale(1.08); }
 .tracklist-base { text-wrap: balance; hyphens: auto; }
 
 @media (prefers-reduced-motion: reduce) {

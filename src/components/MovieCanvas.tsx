@@ -9,7 +9,7 @@ import React from 'react';
 import type { Movie } from '../types/movie';
 import { getDirector, getTopCast, formatMovieRuntime, getMovieYear, getTMDbImageUrl } from '../types/movie';
 
-export type PosterBg = 'white' | 'beige' | 'blur' | 'black' | 'custom';
+export type PosterBg = 'white' | 'beige' | 'blur' | 'blur-medium' | 'blur-intense' | 'black' | 'custom';
 export type FrameStyle = 'none' | 'thin' | 'gallery';
 export type LayoutVariant = '60-40' | '50-50';
 
@@ -92,6 +92,24 @@ export function MovieCanvas({
           <>
             <div
               className="absolute inset-0 poster-blur-layer"
+              style={{ backgroundImage: `url(${posterUrl})` }}
+            />
+            <div className="absolute inset-0" style={{ background: `rgba(0,0,0,var(--overlay))` }} />
+          </>
+        )}
+        {bg === 'blur-medium' && posterUrl && (
+          <>
+            <div
+              className="absolute inset-0 poster-blur-medium-layer"
+              style={{ backgroundImage: `url(${posterUrl})` }}
+            />
+            <div className="absolute inset-0" style={{ background: `rgba(0,0,0,var(--overlay))` }} />
+          </>
+        )}
+        {bg === 'blur-intense' && posterUrl && (
+          <>
+            <div
+              className="absolute inset-0 poster-blur-intense-layer"
               style={{ backgroundImage: `url(${posterUrl})` }}
             />
             <div className="absolute inset-0" style={{ background: `rgba(0,0,0,var(--overlay))` }} />

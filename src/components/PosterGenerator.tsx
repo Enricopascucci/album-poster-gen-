@@ -141,6 +141,28 @@ export function PosterGenerator({ album, onBack, tokenMode = false, token, onDow
           "--chip": "rgba(0,0,0,0.25)",
           "--overlay": "0.68",
         } as React.CSSProperties;
+      case "blur-medium":
+        return {
+          "--poster-bg": "#151518",
+          "--text": "#f5f5f5",
+          "--muted": "rgba(255,255,255,0.88)",
+          "--subtle": "rgba(255,255,255,0.75)",
+          "--ring": "rgba(255,255,255,0.10)",
+          "--shadow": "0 14px 50px rgba(0,0,0,0.6)",
+          "--chip": "rgba(0,0,0,0.25)",
+          "--overlay": "0.60",
+        } as React.CSSProperties;
+      case "blur-intense":
+        return {
+          "--poster-bg": "#151518",
+          "--text": "#f5f5f5",
+          "--muted": "rgba(255,255,255,0.88)",
+          "--subtle": "rgba(255,255,255,0.75)",
+          "--ring": "rgba(255,255,255,0.10)",
+          "--shadow": "0 14px 50px rgba(0,0,0,0.6)",
+          "--chip": "rgba(0,0,0,0.25)",
+          "--overlay": "0.50",
+        } as React.CSSProperties;
       default:
         return {} as React.CSSProperties;
     }
