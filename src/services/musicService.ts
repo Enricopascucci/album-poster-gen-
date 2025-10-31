@@ -127,7 +127,11 @@ class MusicService {
     try {
       const data = await this.apiGet<{ albums: { items: Album[] } }>(
         `${SPOTIFY_API_BASE}/browse/new-releases`,
-        { country: GLOBAL_MARKET, limit }
+        {
+          country: 'US',  // Explicitly set to US
+          locale: 'en_US', // Force US locale
+          limit
+        }
       );
       return data.albums.items;
     } catch (e) {
