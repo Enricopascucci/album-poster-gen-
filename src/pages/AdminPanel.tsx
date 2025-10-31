@@ -19,6 +19,9 @@ interface OrderResponse {
   orderId?: string;
   customerEmail?: string;
   expiresAt?: string;
+  emailSent?: boolean;
+  emailError?: string;
+  debug?: any;
 }
 
 export function AdminPanel() {
@@ -174,34 +177,91 @@ export function AdminPanel() {
 
             {/* Success Message */}
             {response && response.success && (
-              <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div className="ml-3 flex-1">
-                    <h3 className="text-sm font-semibold text-green-800">Success!</h3>
-                    <p className="text-sm text-green-700 mt-1">{response.message}</p>
-                    <div className="mt-3 space-y-1 text-xs">
-                      <p className="text-green-800">
-                        <span className="font-semibold">Order ID:</span> {response.orderId}
-                      </p>
-                      <p className="text-green-800">
-                        <span className="font-semibold">Token:</span> <code className="bg-green-100 px-2 py-0.5 rounded">{response.token}</code>
-                      </p>
-                      <p className="text-green-800">
-                        <span className="font-semibold">Email sent to:</span> {response.customerEmail}
-                      </p>
-                      {response.expiresAt && (
+              <div className="space-y-3">
+                {/* Main Success Box */}
+                <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3 flex-1">
+                      <h3 className="text-sm font-semibold text-green-800">Success!</h3>
+                      <p className="text-sm text-green-700 mt-1">{response.message}</p>
+                      <div className="mt-3 space-y-1 text-xs">
                         <p className="text-green-800">
-                          <span className="font-semibold">Expires:</span> {new Date(response.expiresAt).toLocaleString()}
+                          <span className="font-semibold">Order ID:</span> {response.orderId}
                         </p>
-                      )}
+                        <p className="text-green-800">
+                          <span className="font-semibold">Token:</span> <code className="bg-green-100 px-2 py-0.5 rounded">{response.token}</code>
+                        </p>
+                        <p className="text-green-800">
+                          <span className="font-semibold">Email sent to:</span> {response.customerEmail}
+                        </p>
+                        {response.expiresAt && (
+                          <p className="text-green-800">
+                            <span className="font-semibold">Expires:</span> {new Date(response.expiresAt).toLocaleString()}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                {/* Email Status Box */}
+                {response.emailSent !== undefined && (
+                  <div className={`border-l-4 p-4 rounded ${
+                    response.emailSent
+                      ? 'bg-blue-50 border-blue-500'
+                      : 'bg-yellow-50 border-yellow-500'
+                  }`}>
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        {response.emailSent ? (
+                          <svg className="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                        ) : (
+                          <svg className="h-5 w-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="ml-3 flex-1">
+                        <h3 className={`text-sm font-semibold ${
+                          response.emailSent ? 'text-blue-800' : 'text-yellow-800'
+                        }`}>
+                          {response.emailSent ? 'Email Sent' : 'Email Not Sent'}
+                        </h3>
+                        <p className={`text-sm mt-1 ${
+                          response.emailSent ? 'text-blue-700' : 'text-yellow-700'
+                        }`}>
+                          {response.emailSent
+                            ? 'The welcome email was successfully sent to the customer.'
+                            : 'The order was created but the email failed to send.'}
+                        </p>
+                        {response.emailError && (
+                          <p className="text-xs text-yellow-800 mt-2 bg-yellow-100 p-2 rounded">
+                            <span className="font-semibold">Error:</span> {response.emailError}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Debug Info */}
+                {response.debug && (
+                  <details className="bg-gray-50 border border-gray-200 rounded p-3">
+                    <summary className="text-xs font-semibold text-gray-700 cursor-pointer hover:text-gray-900">
+                      Debug Information
+                    </summary>
+                    <pre className="mt-2 text-xs text-gray-600 overflow-auto bg-white p-2 rounded border border-gray-200">
+                      {JSON.stringify(response.debug, null, 2)}
+                    </pre>
+                  </details>
+                )}
               </div>
             )}
           </form>
