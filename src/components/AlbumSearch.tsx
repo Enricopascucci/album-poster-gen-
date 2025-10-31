@@ -97,7 +97,7 @@ export function AlbumSearch({ onAlbumSelect }: AlbumSearchProps) {
             style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: 350 }}
           >
             {query ? 'Search for an album and create a beautiful poster'
-                   : 'Discover trending albums in the USA 🇺🇸'}
+                   : 'Discover trending albums all around the world'}
           </p>
         </div>
 

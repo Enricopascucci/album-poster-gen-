@@ -9,7 +9,7 @@ import React from 'react';
 import type { Movie } from '../types/movie';
 import { getDirector, getTopCast, formatMovieRuntime, getMovieYear, getTMDbImageUrl } from '../types/movie';
 
-export type PosterBg = 'white' | 'beige' | 'blur' | 'blur-medium' | 'blur-intense' | 'black' | 'custom';
+export type PosterBg = 'white' | 'beige' | 'blur' | 'black' | 'custom';
 export type FrameStyle = 'none' | 'thin' | 'gallery';
 export type LayoutVariant = '60-40' | '50-50';
 
@@ -27,6 +27,7 @@ interface MovieCanvasProps {
   showRating: boolean;
   showCast: boolean;
   colorPalette: string[];
+  blurIntensity: number; // 0-100 per blur dinamico
 
   // css vars già calcolate a monte
   themeVars: React.CSSProperties;
@@ -49,6 +50,7 @@ export function MovieCanvas({
   showRating,
   showCast,
   colorPalette,
+  blurIntensity,
   themeVars,
   fontVars,
   frameVars,
@@ -90,29 +92,17 @@ export function MovieCanvas({
         )}
         {bg === 'blur' && posterUrl && (
           <>
+            <div className="absolute inset-0" style={{ background: 'var(--poster-bg)' }} />
             <div
-              className="absolute inset-0 poster-blur-layer"
-              style={{ backgroundImage: `url(${posterUrl})` }}
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `url(${posterUrl})`,
+                backgroundPosition: 'center',
+                backgroundSize: 'cover',
+                filter: `blur(${(blurIntensity / 100) * 40}px)`,
+                transform: 'scale(1.08)'
+              }}
             />
-            <div className="absolute inset-0" style={{ background: `rgba(0,0,0,var(--overlay))` }} />
-          </>
-        )}
-        {bg === 'blur-medium' && posterUrl && (
-          <>
-            <div
-              className="absolute inset-0 poster-blur-medium-layer"
-              style={{ backgroundImage: `url(${posterUrl})` }}
-            />
-            <div className="absolute inset-0" style={{ background: `rgba(0,0,0,var(--overlay))` }} />
-          </>
-        )}
-        {bg === 'blur-intense' && posterUrl && (
-          <>
-            <div
-              className="absolute inset-0 poster-blur-intense-layer"
-              style={{ backgroundImage: `url(${posterUrl})` }}
-            />
-            <div className="absolute inset-0" style={{ background: `rgba(0,0,0,var(--overlay))` }} />
           </>
         )}
 

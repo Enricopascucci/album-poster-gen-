@@ -3,7 +3,7 @@ import type { Album, Track } from '../types/album';
 import { formatReleaseDate } from '../utils/colorExtractor';
 import { Waveform } from './Waveform';
 
-export type PosterBg = 'white' | 'beige' | 'blur' | 'blur-medium' | 'blur-intense' | 'black' | 'custom';
+export type PosterBg = 'white' | 'beige' | 'blur' | 'black' | 'custom';
 export type FrameStyle = 'none' | 'thin' | 'gallery';
 export type LayoutVariant = '60-40' | '50-50';
 export type PaletteShape = 'square' | 'rounded' | 'circle';
@@ -34,6 +34,7 @@ interface PosterCanvasProps {
   paletteShape: PaletteShape;
   tracklistColumns: TracklistColumns;
   trackSpacing: TrackSpacing;
+  blurIntensity: number; // 0-100 per blur dinamico
 
   // css vars già calcolate a monte
   themeVars: React.CSSProperties;
@@ -53,6 +54,7 @@ export function PosterCanvas({
   paletteShape,
   tracklistColumns,
   trackSpacing,
+  blurIntensity,
   themeVars, fontVars, frameVars, rows,
   insetXClass = 'px-6 md:px-8'
 }: PosterCanvasProps) {
@@ -148,23 +150,17 @@ export function PosterCanvas({
         )}
         {bg === 'blur' && highResImage && (
           <>
-            <div className="absolute inset-0" style={{ background: '#000000' }} />
-            <div className="absolute inset-0 poster-blur-layer" style={{ backgroundImage: `url(${highResImage})` }} />
-            <div className="absolute inset-0" style={{ background: `rgba(0,0,0,var(--overlay))` }} />
-          </>
-        )}
-        {bg === 'blur-medium' && highResImage && (
-          <>
-            <div className="absolute inset-0" style={{ background: '#000000' }} />
-            <div className="absolute inset-0 poster-blur-medium-layer" style={{ backgroundImage: `url(${highResImage})` }} />
-            <div className="absolute inset-0" style={{ background: `rgba(0,0,0,var(--overlay))` }} />
-          </>
-        )}
-        {bg === 'blur-intense' && highResImage && (
-          <>
-            <div className="absolute inset-0" style={{ background: '#000000' }} />
-            <div className="absolute inset-0 poster-blur-intense-layer" style={{ backgroundImage: `url(${highResImage})` }} />
-            <div className="absolute inset-0" style={{ background: `rgba(0,0,0,var(--overlay))` }} />
+            <div className="absolute inset-0" style={{ background: 'var(--poster-bg)' }} />
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `url(${highResImage})`,
+                backgroundPosition: 'center',
+                backgroundSize: 'cover',
+                filter: `blur(${(blurIntensity / 100) * 40}px)`,
+                transform: 'scale(1.08)'
+              }}
+            />
           </>
         )}
 

@@ -151,29 +151,96 @@ export function Home() {
                   Professional 4K resolution ready for any frame size, from phone wallpapers to wall prints.
                 </p>
               </div>
-              <div className="text-center lg:text-left">
+              <div className="text-center lg:text-left lg:col-span-2">
                 <h4
-                  className="text-[28px] font-bold mb-4 leading-tight text-white"
+                  className="text-[28px] font-bold mb-6 leading-tight text-white"
                   style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: 700 }}
                 >
                   Full Customization
                 </h4>
                 <p
-                  className="text-[16px] text-gray-300 leading-relaxed mb-4"
+                  className="text-[16px] text-gray-300 leading-relaxed mb-6"
                   style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: 350 }}
                 >
                   Make it truly yours with complete control over every detail:
                 </p>
-                <ul
-                  className="text-[14px] text-gray-300 space-y-2 leading-relaxed"
-                  style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: 350 }}
-                >
-                  <li>• Choose from multiple font styles</li>
-                  <li>• Customize background colors</li>
-                  <li>• Add personal messages or dates</li>
-                  <li>• Adjust layouts and spacing</li>
-                  <li>• Select color schemes</li>
-                </ul>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h5
+                      className="text-[14px] font-bold mb-3 text-white uppercase tracking-wider"
+                      style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                    >
+                      Background Options
+                    </h5>
+                    <ul
+                      className="text-[14px] text-gray-300 space-y-2 leading-relaxed"
+                      style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: 350 }}
+                    >
+                      <li>• 4 preset backgrounds (White, Beige, Black, Blur)</li>
+                      <li>• Custom color picker with color wheel</li>
+                      <li>• Adjustable blur intensity (0-100)</li>
+                      <li>• Smart background-to-text contrast</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5
+                      className="text-[14px] font-bold mb-3 text-white uppercase tracking-wider"
+                      style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                    >
+                      Typography
+                    </h5>
+                    <ul
+                      className="text-[14px] text-gray-300 space-y-2 leading-relaxed"
+                      style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: 350 }}
+                    >
+                      <li>• 15+ professional font families</li>
+                      <li>• Custom font weight selector</li>
+                      <li>• Auto, dark or light text color</li>
+                      <li>• Optimized for readability</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5
+                      className="text-[14px] font-bold mb-3 text-white uppercase tracking-wider"
+                      style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                    >
+                      Layout & Style
+                    </h5>
+                    <ul
+                      className="text-[14px] text-gray-300 space-y-2 leading-relaxed"
+                      style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: 350 }}
+                    >
+                      <li>• Cover corner radius (sharp to rounded)</li>
+                      <li>• Frame styles (None, Thin, Gallery)</li>
+                      <li>• Color palette shapes (Square, Round, Circle)</li>
+                      <li>• Layout ratios (60-40, 50-50)</li>
+                      <li>• Track spacing control (compact to spacious)</li>
+                      <li>• Tracklist columns (auto, 1 or 2 columns)</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h5
+                      className="text-[14px] font-bold mb-3 text-white uppercase tracking-wider"
+                      style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                    >
+                      Content Options
+                    </h5>
+                    <ul
+                      className="text-[14px] text-gray-300 space-y-2 leading-relaxed"
+                      style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', fontWeight: 350 }}
+                    >
+                      <li>• Add personal messages or dates</li>
+                      <li>• Show/hide album duration</li>
+                      <li>• Show/hide audio waveform</li>
+                      <li>• Toggle copyright information</li>
+                      <li>• Real-time preview of changes</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
               <div className="text-center lg:text-left">
                 <h4

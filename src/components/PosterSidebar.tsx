@@ -9,6 +9,8 @@ interface PosterSidebarProps {
   // Background
   bgMode: BgMode; setBgMode: (m: BgMode) => void;
   customBg: string; setCustomBg: (hex: string) => void;
+  blurIntensity: number; setBlurIntensity: (n: number) => void;
+  textColor: 'auto' | 'light' | 'dark'; setTextColor: (c: 'auto' | 'light' | 'dark') => void;
 
   // Font picker
   fontValue: FontPickerValue;
@@ -73,13 +75,82 @@ export function PosterSidebar(p: PosterSidebarProps) {
             {/* Sezione Background */}
             <section className="space-y-3">
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Background</h3>
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
+              <div className="bg-white rounded-lg p-4 border border-gray-200 space-y-4">
                 <PosterBgPicker
                   mode={p.bgMode}
                   customColor={p.customBg}
                   onModeChange={p.setBgMode}
                   onCustomChange={p.setCustomBg}
                 />
+
+                {/* Blur Intensity Slider - mostra solo se bgMode === 'blur' */}
+                {p.bgMode === 'blur' && (
+                  <div className="pt-3 border-t border-gray-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-sm font-medium text-gray-700">
+                        Blur Intensity
+                      </label>
+                      <span className="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                        {p.blurIntensity}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={p.blurIntensity}
+                      onChange={(e) => p.setBlurIntensity(Number(e.target.value))}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+                    />
+                    <div className="flex justify-between mt-1 text-xs text-gray-400">
+                      <span>More Visible</span>
+                      <span>Less Visible</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Text Color Toggle */}
+                <div className="pt-3 border-t border-gray-200">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Text Color
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => p.setTextColor('auto')}
+                      className={`px-3 py-2 rounded-lg border font-medium text-xs transition-colors ${
+                        p.textColor === 'auto'
+                          ? 'border-black bg-black text-white'
+                          : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                      }`}
+                    >
+                      Auto
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => p.setTextColor('dark')}
+                      className={`px-3 py-2 rounded-lg border font-medium text-xs transition-colors ${
+                        p.textColor === 'dark'
+                          ? 'border-black bg-black text-white'
+                          : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                      }`}
+                    >
+                      Dark
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => p.setTextColor('light')}
+                      className={`px-3 py-2 rounded-lg border font-medium text-xs transition-colors ${
+                        p.textColor === 'light'
+                          ? 'border-black bg-black text-white'
+                          : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                      }`}
+                    >
+                      Light
+                    </button>
+                  </div>
+                </div>
               </div>
             </section>
 

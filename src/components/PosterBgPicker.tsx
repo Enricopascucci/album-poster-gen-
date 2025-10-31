@@ -1,6 +1,6 @@
 import { PosterColorWheel } from './PosterColorWheel';
 
-export type BgMode = 'white' | 'beige' | 'black' | 'blur' | 'blur-medium' | 'blur-intense' | 'custom';
+export type BgMode = 'white' | 'beige' | 'black' | 'blur' | 'custom';
 
 interface PosterBgPickerProps {
   mode: BgMode;
@@ -44,9 +44,7 @@ export function PosterBgPicker({
         <Button value="white" label="White" />
         <Button value="beige" label="Beige" />
         <Button value="black" label="Black" />
-        <Button value="blur"  label="Blur Light" />
-        <Button value="blur-medium"  label="Blur Medium" />
-        <Button value="blur-intense"  label="Blur Intense" />
+        <Button value="blur"  label="Blur" />
         <Button value="custom" label="Custom" />
       </div>
 

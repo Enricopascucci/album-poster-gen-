@@ -38,6 +38,8 @@ export function MoviePosterGenerator({
   // ====== Personalizzazioni ======
   const [bgMode, setBgMode] = useState<BgMode>("beige");
   const [customBg, setCustomBg] = useState<string>("#eaeaea");
+  const [blurIntensity, setBlurIntensity] = useState<number>(50); // 0-100
+  const [textColor, setTextColor] = useState<'auto' | 'light' | 'dark'>('auto'); // Colore del testo
 
   const [frame, setFrame] = useState<FrameStyle>("none");
   const [layout, setLayout] = useState<LayoutVariant>("60-40");
@@ -84,80 +86,122 @@ export function MoviePosterGenerator({
     return `linear-gradient(90deg, ${c1}, ${c2} 50%, ${c3})`;
   }, [colorPalette]);
 
+  // Helper per i colori del testo
+  const getTextColors = (colorMode: 'auto' | 'light' | 'dark', currentBgMode: BgMode, currentCustomBg: string) => {
+    // Se auto, calcola in base al background
+    if (colorMode === 'auto') {
+      let isDark = true; // default scuro
+
+      if (currentBgMode === 'white' || currentBgMode === 'beige') {
+        isDark = true; // testo scuro su sfondo chiaro
+      } else if (currentBgMode === 'black' || currentBgMode === 'blur') {
+        isDark = false; // testo chiaro su sfondo scuro
+      } else if (currentBgMode === 'custom') {
+        // Calcola in base alla luminanza
+        const rgb = hexToRgb(currentCustomBg) ?? { r: 234, g: 234, b: 234 };
+        const lum = relativeLuminance(rgb.r, rgb.g, rgb.b);
+        isDark = lum > 0.64;
+      }
+
+      if (isDark) {
+        return {
+          text: "#1a1a1a",
+          muted: "#4a4a4a",
+          subtle: "#5a5a5a",
+          ring: "rgba(0,0,0,0.06)",
+          shadow: "0 14px 50px rgba(0,0,0,0.25)",
+          chip: "rgba(0,0,0,0.06)",
+        };
+      } else {
+        return {
+          text: "#f5f5f5",
+          muted: "rgba(255,255,255,0.88)",
+          subtle: "rgba(255,255,255,0.75)",
+          ring: "rgba(255,255,255,0.10)",
+          shadow: "0 14px 50px rgba(0,0,0,0.6)",
+          chip: "rgba(0,0,0,0.25)",
+        };
+      }
+    }
+
+    // Scelta manuale
+    if (colorMode === 'light') {
+      return {
+        text: "#f5f5f5",
+        muted: "rgba(255,255,255,0.88)",
+        subtle: "rgba(255,255,255,0.75)",
+        ring: "rgba(255,255,255,0.10)",
+        shadow: "0 14px 50px rgba(0,0,0,0.6)",
+        chip: "rgba(0,0,0,0.25)",
+      };
+    } else {
+      return {
+        text: "#1a1a1a",
+        muted: "#4a4a4a",
+        subtle: "#5a5a5a",
+        ring: "rgba(0,0,0,0.06)",
+        shadow: "0 14px 50px rgba(0,0,0,0.25)",
+        chip: "rgba(0,0,0,0.06)",
+      };
+    }
+  };
+
   // ====== Tema (CSS vars) ======
   const themeVars = useMemo<React.CSSProperties>(() => {
-    if (bgMode === "custom") return themeFromCustom(customBg);
+    if (bgMode === "custom") return themeFromCustom(customBg, textColor);
+
+    const colors = getTextColors(textColor, bgMode, customBg);
+
     switch (bgMode) {
       case "white":
         return {
           "--poster-bg": "#ffffff",
-          "--text": "#1a1a1a",
-          "--muted": "#3e3e3e",
-          "--subtle": "#5a5a5a",
-          "--ring": "rgba(0,0,0,0.06)",
-          "--shadow": "0 14px 50px rgba(0,0,0,0.25)",
-          "--chip": "rgba(0,0,0,0.06)",
+          "--text": colors.text,
+          "--muted": colors.muted,
+          "--subtle": colors.subtle,
+          "--ring": colors.ring,
+          "--shadow": colors.shadow,
+          "--chip": colors.chip,
           "--overlay": "0",
         } as React.CSSProperties;
       case "beige":
         return {
           "--poster-bg": "#f5f0e8",
-          "--text": "#1a1a1a",
-          "--muted": "#4a4a4a",
-          "--subtle": "#5a5a5a",
-          "--ring": "rgba(0,0,0,0.05)",
-          "--shadow": "0 14px 50px rgba(0,0,0,0.25)",
-          "--chip": "rgba(0,0,0,0.06)",
+          "--text": colors.text,
+          "--muted": colors.muted,
+          "--subtle": colors.subtle,
+          "--ring": colors.ring,
+          "--shadow": colors.shadow,
+          "--chip": colors.chip,
           "--overlay": "0",
         } as React.CSSProperties;
       case "black":
         return {
           "--poster-bg": "#0f0f10",
-          "--text": "#f5f5f5",
-          "--muted": "rgba(255,255,255,0.86)",
-          "--subtle": "rgba(255,255,255,0.72)",
-          "--ring": "rgba(255,255,255,0.10)",
-          "--shadow": "0 14px 50px rgba(0,0,0,0.6)",
-          "--chip": "rgba(255,255,255,0.08)",
+          "--text": colors.text,
+          "--muted": colors.muted,
+          "--subtle": colors.subtle,
+          "--ring": colors.ring,
+          "--shadow": colors.shadow,
+          "--chip": colors.chip,
           "--overlay": "0",
         } as React.CSSProperties;
-      case "blur":
+      case "blur": {
         return {
           "--poster-bg": "#151518",
-          "--text": "#f5f5f5",
-          "--muted": "rgba(255,255,255,0.88)",
-          "--subtle": "rgba(255,255,255,0.75)",
-          "--ring": "rgba(255,255,255,0.10)",
-          "--shadow": "0 14px 50px rgba(0,0,0,0.6)",
-          "--chip": "rgba(0,0,0,0.25)",
-          "--overlay": "0.35",
+          "--text": colors.text,
+          "--muted": colors.muted,
+          "--subtle": colors.subtle,
+          "--ring": colors.ring,
+          "--shadow": colors.shadow,
+          "--chip": colors.chip,
+          "--overlay": "0",
         } as React.CSSProperties;
-      case "blur-medium":
-        return {
-          "--poster-bg": "#151518",
-          "--text": "#f5f5f5",
-          "--muted": "rgba(255,255,255,0.88)",
-          "--subtle": "rgba(255,255,255,0.75)",
-          "--ring": "rgba(255,255,255,0.10)",
-          "--shadow": "0 14px 50px rgba(0,0,0,0.6)",
-          "--chip": "rgba(0,0,0,0.25)",
-          "--overlay": "0.30",
-        } as React.CSSProperties;
-      case "blur-intense":
-        return {
-          "--poster-bg": "#151518",
-          "--text": "#f5f5f5",
-          "--muted": "rgba(255,255,255,0.88)",
-          "--subtle": "rgba(255,255,255,0.75)",
-          "--ring": "rgba(255,255,255,0.10)",
-          "--shadow": "0 14px 50px rgba(0,0,0,0.6)",
-          "--chip": "rgba(0,0,0,0.25)",
-          "--overlay": "0.25",
-        } as React.CSSProperties;
+      }
       default:
         return {} as React.CSSProperties;
     }
-  }, [bgMode, customBg]);
+  }, [bgMode, customBg, textColor]);
 
   // ====== Tipografia ======
   const fontVars = useMemo<React.CSSProperties>(() => {
@@ -297,6 +341,7 @@ export function MoviePosterGenerator({
           showRating={showRating}
           showCast={showCast}
           colorPalette={colorPalette}
+          blurIntensity={blurIntensity}
           themeVars={themeVars}
           fontVars={fontVars}
           frameVars={frameVars}
@@ -310,6 +355,10 @@ export function MoviePosterGenerator({
           setBgMode={setBgMode}
           customBg={customBg}
           setCustomBg={setCustomBg}
+          blurIntensity={blurIntensity}
+          setBlurIntensity={setBlurIntensity}
+          textColor={textColor}
+          setTextColor={setTextColor}
           fontValue={fontValue}
           setFontValue={handleFontChange}
           layout={layout}
@@ -347,19 +396,26 @@ export function MoviePosterGenerator({
    Utils per il tema custom
    ============================ */
 
-function themeFromCustom(hex: string): React.CSSProperties {
-  const rgb = hexToRgb(hex) ?? { r: 234, g: 234, b: 234 };
-  const lum = relativeLuminance(rgb.r, rgb.g, rgb.b);
+function themeFromCustom(hex: string, textColorMode: 'auto' | 'light' | 'dark'): React.CSSProperties {
+  let textIsDark: boolean;
 
-  const textIsDark = lum > 0.64;
+  if (textColorMode === 'auto') {
+    // Calcola in base alla luminanza
+    const rgb = hexToRgb(hex) ?? { r: 234, g: 234, b: 234 };
+    const lum = relativeLuminance(rgb.r, rgb.g, rgb.b);
+    textIsDark = lum > 0.64;
+  } else {
+    textIsDark = textColorMode === 'dark';
+  }
+
   const text = textIsDark ? "#1a1a1a" : "#f5f5f5";
   const muted = textIsDark ? "#4a4a4a" : "rgba(255,255,255,0.88)";
   const subtle = textIsDark ? "#5a5a5a" : "rgba(255,255,255,0.75)";
-  const ring = textIsDark ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.14)";
+  const ring = textIsDark ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.10)";
   const shadow = textIsDark
     ? "0 14px 50px rgba(0,0,0,0.25)"
     : "0 14px 50px rgba(0,0,0,0.6)";
-  const chip = textIsDark ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.10)";
+  const chip = textIsDark ? "rgba(0,0,0,0.06)" : "rgba(0,0,0,0.25)";
 
   return {
     "--poster-bg": hex,
