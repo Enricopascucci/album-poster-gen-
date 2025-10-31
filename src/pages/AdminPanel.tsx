@@ -34,16 +34,16 @@ export function AdminPanel() {
     setError(null);
 
     try {
-      const res = await fetch(`${APPS_SCRIPT_URL}?action=manual-order`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email.trim(),
-          name: name.trim() || 'Customer',
-          password: password
-        })
+      // Use GET instead of POST to avoid CORS preflight
+      const params = new URLSearchParams({
+        action: 'manual-order',
+        email: email.trim(),
+        name: name.trim() || 'Customer',
+        password: password
+      });
+
+      const res = await fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, {
+        method: 'GET',
       });
 
       const data: OrderResponse = await res.json();
