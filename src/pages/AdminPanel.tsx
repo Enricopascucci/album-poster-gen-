@@ -3,6 +3,8 @@
  *
  * Permette di creare ordini manualmente quando Etsy webhook non funziona.
  * Protetto da password.
+ *
+ * Updated: 2025-10-31
  */
 
 import { useState } from 'react';
