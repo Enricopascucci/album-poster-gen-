@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziIpd6RwRpkp2kX6SKq-1p3x-G19I2CaDONqZ7Sge8RXw79jXrFzqDVzlO3hKR7hh3/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby0ZhqZ70fR2N6WgPylTtZqPSJMW3xCW3uPb-7BPdRa8wQ2xSSh1euAo0Ubm9hljXcY/exec';
 
 interface OrderResponse {
   success: boolean;
