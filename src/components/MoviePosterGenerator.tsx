@@ -12,7 +12,7 @@ import { exportAsPNG } from "../utils/exportPoster";
 import { useArtworkPreload } from "../hooks/useArtworkPreload";
 import { usePalette } from "../hooks/usePalette";
 import { MovieCanvas } from "./MovieCanvas";
-import type { PosterBg, FrameStyle, LayoutVariant } from "./MovieCanvas";
+import type { PosterBg, FrameStyle, LayoutVariant, PaletteShape, TracklistColumns, TrackSpacing } from "./PosterCanvas";
 import { PosterSidebar } from "./PosterSidebar";
 import type { BgMode } from "./PosterBgPicker";
 import type { FontPickerValue } from "./FontPicker";
@@ -46,6 +46,9 @@ export function MoviePosterGenerator({
   const [showDuration, setShowDuration] = useState<boolean>(true);
   const [showRating, setShowRating] = useState<boolean>(true);
   const [showCast, setShowCast] = useState<boolean>(true);
+  const [paletteShape, setPaletteShape] = useState<PaletteShape>("rounded");
+  const [tracklistColumns, setTracklistColumns] = useState<TracklistColumns>("auto");
+  const [trackSpacing, setTrackSpacing] = useState<TrackSpacing>(5);
 
   // ====== Font (FontPicker) ======
   const [fontValue, setFontValue] = useState<FontPickerValue>({
@@ -293,6 +296,12 @@ export function MoviePosterGenerator({
           setRadius={setRadius}
           frame={frame}
           setFrame={setFrame}
+          paletteShape={paletteShape}
+          setPaletteShape={setPaletteShape}
+          tracklistColumns={tracklistColumns}
+          setTracklistColumns={setTracklistColumns}
+          trackSpacing={trackSpacing}
+          setTrackSpacing={setTrackSpacing}
           tagline={tagline}
           setTagline={setTagline}
           showDuration={showDuration}

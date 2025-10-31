@@ -6,7 +6,7 @@ import { useArtworkPreload } from "../hooks/useArtworkPreload";
 import { usePalette } from "../hooks/usePalette";
 import { useWaveform } from "../hooks/useWaveform";
 import { PosterCanvas } from "./PosterCanvas";
-import type { PosterBg, FrameStyle, LayoutVariant, PaletteShape, TracklistColumns } from "./PosterCanvas";
+import type { PosterBg, FrameStyle, LayoutVariant, PaletteShape, TracklistColumns, TrackSpacing } from "./PosterCanvas";
 import { PosterSidebar } from "./PosterSidebar";
 import type { BgMode } from "./PosterBgPicker";
 import type { FontPickerValue } from "./FontPicker";
