@@ -6,6 +6,9 @@ import { Waveform } from './Waveform';
 export type PosterBg = 'white' | 'beige' | 'blur' | 'black' | 'custom';
 export type FrameStyle = 'none' | 'thin' | 'gallery';
 export type LayoutVariant = '60-40' | '50-50';
+export type PaletteShape = 'square' | 'rounded' | 'circle';
+export type TracklistColumns = 'auto' | '1-col' | '2-col';
+export type TrackSpacing = number; // 0-10 scale
 
 interface PosterCanvasProps {
   album: Album;
@@ -28,6 +31,9 @@ interface PosterCanvasProps {
   showCopyright: boolean;
   showWaveform: boolean;
   waveformData: number[];
+  paletteShape: PaletteShape;
+  tracklistColumns: TracklistColumns;
+  trackSpacing: TrackSpacing;
 
   // css vars già calcolate a monte
   themeVars: React.CSSProperties;
@@ -44,13 +50,29 @@ export function PosterCanvas({
   artistNames, highResImage, tracks, totalDuration,
   colorPalette, bg, frame, radius,
   tagline, showDuration, showWaveform, waveformData,
+  paletteShape,
+  tracklistColumns,
+  trackSpacing,
   themeVars, fontVars, frameVars, rows,
   insetXClass = 'px-6 md:px-8'
 }: PosterCanvasProps) {
 
   const getTracklistClass = (trackCount: number): string => {
-    if (trackCount <= 14) return 'tracks-few';       // 1-14: 1 colonna
-    if (trackCount <= 24) return 'tracks-medium';    // 15-24: 2 colonne, font 0.9rem
+    // Se l'utente ha forzato 1 colonna, usa sempre tracks-few
+    if (tracklistColumns === '1-col') {
+      return 'tracks-few';
+    }
+
+    // Se l'utente ha forzato 2 colonne, salta tracks-few
+    if (tracklistColumns === '2-col') {
+      if (trackCount <= 24) return 'tracks-medium';
+      if (trackCount <= 36) return 'tracks-many';
+      return 'tracks-very-many';
+    }
+
+    // Auto: logica di default
+    if (trackCount <= 13) return 'tracks-few';       // 1-13: 1 colonna
+    if (trackCount <= 24) return 'tracks-medium';    // 14-24: 2 colonne, font 0.9rem
     if (trackCount <= 36) return 'tracks-many';      // 25-36: 2 colonne, font 0.75rem
     return 'tracks-very-many';                       // 37+: 2 colonne, font 0.7rem
   };
@@ -69,6 +91,41 @@ export function PosterCanvas({
   };
 
   const waveformSize = getWaveformSize(tracks.length);
+
+  // Calcola stile per le palette in base alla forma geometrica
+  const getPaletteShapeStyle = (): React.CSSProperties => {
+    switch (paletteShape) {
+      case 'square':
+        // Quadrati: aspect ratio 1:1
+        return {
+          aspectRatio: '1',
+          width: 'auto',
+          height: '40px',
+          borderRadius: '0px'
+        };
+      case 'rounded':
+        // Rettangoli arrotondati: larghezza fissa
+        return {
+          width: '50px',
+          height: '40px',
+          borderRadius: '4px'
+        };
+      case 'circle':
+        // Cerchi perfetti: aspect ratio 1:1 con border-radius 50%
+        return {
+          aspectRatio: '1',
+          width: 'auto',
+          height: '40px',
+          borderRadius: '50%'
+        };
+      default:
+        return {
+          width: '50px',
+          height: '40px',
+          borderRadius: '4px'
+        };
+    }
+  };
 
   return (
     <div className="flex justify-center">
@@ -91,6 +148,7 @@ export function PosterCanvas({
         )}
         {bg === 'blur' && highResImage && (
           <>
+            <div className="absolute inset-0" style={{ background: '#000000' }} />
             <div className="absolute inset-0 poster-blur-layer" style={{ backgroundImage: `url(${highResImage})` }} />
             <div className="absolute inset-0" style={{ background: `rgba(0,0,0,var(--overlay))` }} />
           </>
@@ -114,7 +172,6 @@ export function PosterCanvas({
                   style={{
                     borderColor: 'var(--ring)',
                     borderRadius: radius ? `${radius}px` : undefined,
-                    boxShadow: '0 6px 18px rgba(0,0,0,0.18)',
                     objectFit: 'cover',
                   }}
                   crossOrigin="anonymous"
@@ -132,14 +189,18 @@ export function PosterCanvas({
             </div>
 
             {/* BOTTOM: info (stessi margini) */}
-            <div className={`overflow-hidden ${insetXClass} pb-6 pt-12 flex flex-col`}>
+            <div className={`overflow-hidden ${insetXClass} pb-6 pt-10 flex flex-col`}>
               <div className="grid grid-cols-2 gap-5 md:gap-8 flex-1">
                 {/* Tracce */}
                 <div className="flex flex-col">
                   {tracks.length > 0 && (
                     <div
                       className={`tracklist-base h-full overflow-hidden ${getTracklistClass(tracks.length)}`}
-                      style={{ color: 'var(--text)', fontWeight: 500 }}
+                      style={{
+                        color: 'var(--text)',
+                        fontWeight: 500,
+                        '--track-spacing': trackSpacing
+                      } as React.CSSProperties}
                     >
                       {tracks.map((t: Track) => (
                         <div key={t.id ?? `${t.name}-${t.track_number}`} className="track-item flex gap-[0.3rem]">
@@ -152,21 +213,23 @@ export function PosterCanvas({
                 </div>
 
                 {/* Palette + Info */}
-                <div className="flex flex-col">
+                <div className="flex flex-col items-end">
                   {colorPalette.length > 0 && (
-                    <div className="color-palette-container flex flex-row gap-[0.35rem] mb-5">
+                    <div className="color-palette-container flex flex-row gap-[0.35rem] mb-5 justify-end">
                       {colorPalette.map((c: string, i: number) => (
                         <div
                           key={`${c}-${i}`}
-                          className="flex-1 rounded-[4px] min-w-0 h-[40px] md:h-[44px] border"
-                          style={{ backgroundColor: c, borderColor: 'var(--ring)' }}
+                          style={{
+                            backgroundColor: c,
+                            ...getPaletteShapeStyle()
+                          }}
                           title={c}
                         />
                       ))}
                     </div>
                   )}
 
-                  <div className="title-section mb-5 text-left">
+                  <div className="title-section mb-5 text-right">
                   <h2
   className="m-0 mb-[0.3rem] leading-tight tracking-[0.5px] text-[clamp(1.3rem,2.2vw,1.7rem)]"
   style={{ color: 'var(--text)', fontWeight: 'var(--fw-title)' as any }}
@@ -189,7 +252,7 @@ export function PosterCanvas({
                   <div className="mt-auto">
                     {/* Waveform sopra la data */}
                     {showWaveform && waveformData.length > 0 && (
-                      <div className="mb-4">
+                      <div className="mb-4 flex justify-end">
                         <Waveform
                           data={waveformData}
                           width={waveformSize.width}
@@ -201,10 +264,10 @@ export function PosterCanvas({
                         />
                       </div>
                     )}
-                    <div className="info-section flex flex-col gap-2 mb-3">
+                    <div className="info-section flex flex-col gap-2 mb-3 items-end">
                       {album?.release_date && (
                         <span
-                          className="font-bold tracking-[0.6px] leading-tight text-[clamp(1rem,2vw,1.25rem)]"
+                          className="font-bold tracking-[0.6px] leading-tight text-[clamp(1rem,2vw,1.25rem)] text-right"
                           style={{ color: 'var(--text)' }}
                         >
                           OUT NOW / {formatReleaseDate(album.release_date)}
@@ -212,7 +275,7 @@ export function PosterCanvas({
                       )}
                       {showDuration && (
                         <span
-                          className="font-semibold tracking-[0.5px] text-[clamp(0.9rem,1.6vw,1.05rem)]"
+                          className="font-semibold tracking-[0.5px] text-[clamp(0.9rem,1.6vw,1.05rem)] text-right"
                           style={{ color: 'var(--muted)' }}
                         >
                           {album?.total_tracks} TRACKS{totalDuration ? `, ${totalDuration}` : ''}
@@ -222,7 +285,7 @@ export function PosterCanvas({
 
                     {(album?.copyrights?.[0]?.text || album?.label) && (
                       <div
-                        className="leading-tight text-left tracking-[0.2px] max-w-full break-words text-[0.5rem] md:text-[0.52rem]"
+                        className="leading-tight text-right tracking-[0.2px] max-w-full break-words text-[0.5rem] md:text-[0.52rem]"
                         style={{ color: 'var(--subtle)' }}
                       >
                         {(album?.copyrights?.[0]?.text || album?.label || '').toUpperCase()}

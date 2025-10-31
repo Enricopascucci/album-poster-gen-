@@ -8,7 +8,7 @@ export type FontPickerValue = {
 };
 
 export type FontId =
-  | 'Inter' | 'Roboto' | 'Open Sans' | 'Poppins' | 'Montserrat' | 'Source Sans 3' | 'Noto Sans' | 'Lato'
+  | 'Helvetica Neue' | 'Inter' | 'Roboto' | 'Open Sans' | 'Poppins' | 'Montserrat' | 'Source Sans 3' | 'Noto Sans' | 'Lato' | 'Raleway'
   | 'Playfair Display' | 'Merriweather' | 'Lora' | 'Noto Serif'
   | 'Bebas Neue' | 'Oswald' | 'Anton' | 'Bricolage Grotesque'
   | 'JetBrains Mono' | 'Fira Code';
@@ -26,6 +26,7 @@ type FontChoice = {
 /** Lista curata dei font più usati (Google Fonts) */
 const FONTS: FontChoice[] = [
   // Sans-serif popolari
+  { id: 'Helvetica Neue', label: 'Helvetica Neue', stack: `'Helvetica Neue', Helvetica, Arial, ui-sans-serif, system-ui, -apple-system, sans-serif`, weights: [300,400,500,700], category: 'sans' },
   { id: 'Inter',          label: 'Inter',          stack: `'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`, weights: [300,400,500,600,700,800], category: 'sans' },
   { id: 'Roboto',         label: 'Roboto',         stack: `'Roboto', ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif`,        weights: [300,400,500,700,900], category: 'sans' },
   { id: 'Open Sans',      label: 'Open Sans',      stack: `'Open Sans', ui-sans-serif, system-ui, -apple-system, Segoe UI, Arial, sans-serif`,     weights: [300,400,600,700,800], category: 'sans' },
@@ -34,6 +35,7 @@ const FONTS: FontChoice[] = [
   { id: 'Source Sans 3',  label: 'Source Sans 3',  stack: `'Source Sans 3', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`, weights: [300,400,600,700,800], category: 'sans' },
   { id: 'Noto Sans',      label: 'Noto Sans',      stack: `'Noto Sans', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`, weights: [300,400,500,600,700], category: 'sans' },
   { id: 'Lato',           label: 'Lato',           stack: `'Lato', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`,  weights: [300,400,700,900], category: 'sans' },
+  { id: 'Raleway',        label: 'Raleway',        stack: `'Raleway', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`, weights: [300,400,500,600,700,800], category: 'sans' },
 
   // Serif popolari
   { id: 'Playfair Display', label: 'Playfair Display', stack: `'Playfair Display', ui-serif, Georgia, 'Times New Roman', Times, serif`, weights: [400,500,600,700], category: 'serif' },

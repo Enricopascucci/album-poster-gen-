@@ -1,4 +1,4 @@
-import type { FrameStyle, LayoutVariant } from './PosterCanvas';
+import type { FrameStyle, LayoutVariant, PaletteShape, TracklistColumns, TrackSpacing } from './PosterCanvas';
 import { ChevronLeft, DownloadIcon } from './icons';
 import { PosterBgPicker, type BgMode } from './PosterBgPicker';
 import { FontPicker, type FontPickerValue } from './FontPicker';
@@ -18,6 +18,9 @@ interface PosterSidebarProps {
   layout: LayoutVariant; setLayout: (v: LayoutVariant) => void;
   radius: number; setRadius: (n: number) => void;
   frame: FrameStyle; setFrame: (v: FrameStyle) => void;
+  paletteShape: PaletteShape; setPaletteShape: (v: PaletteShape) => void;
+  tracklistColumns: TracklistColumns; setTracklistColumns: (v: TracklistColumns) => void;
+  trackSpacing: TrackSpacing; setTrackSpacing: (v: TrackSpacing) => void;
   tagline: string; setTagline: (s: string) => void;
   showDuration: boolean; setShowDuration: (b: boolean) => void;
   showCopyright: boolean; setShowCopyright: (b: boolean) => void;
@@ -157,6 +160,97 @@ export function PosterSidebar(p: PosterSidebarProps) {
                     ))}
                   </div>
                 </div>
+
+                {/* Palette Shape */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Palette Shape
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(['square', 'rounded', 'circle'] as const).map((shape) => (
+                      <button
+                        key={shape}
+                        type="button"
+                        onClick={() => p.setPaletteShape(shape)}
+                        className={`px-3 py-3 rounded-lg border font-medium text-xs capitalize transition-colors ${
+                          p.paletteShape === shape
+                            ? 'border-black bg-black text-white'
+                            : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="text-center">
+                          <div className={`w-6 h-6 mx-auto mb-1.5 border ${
+                            p.paletteShape === shape ? 'border-white bg-white' : 'border-gray-300 bg-gray-300'
+                          }`} style={{
+                            borderRadius:
+                              shape === 'square' ? '0' :
+                              shape === 'rounded' ? '4px' :
+                              '50%'
+                          }} />
+                          {shape}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tracklist Columns */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tracklist Columns
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(['auto', '1-col', '2-col'] as const).map((cols) => {
+                      const labels = {
+                        'auto': 'Auto',
+                        '1-col': '1 Column',
+                        '2-col': '2 Columns'
+                      };
+                      return (
+                        <button
+                          key={cols}
+                          type="button"
+                          onClick={() => p.setTracklistColumns(cols)}
+                          className={`px-3 py-3 rounded-lg border font-medium text-xs transition-colors ${
+                            p.tracklistColumns === cols
+                              ? 'border-black bg-black text-white'
+                              : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                          }`}
+                        >
+                          <div className="text-center">{labels[cols]}</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Auto: 1 column for ≤13 tracks, 2 columns for 14+ tracks
+                  </p>
+                </div>
+
+                {/* Track Spacing */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Track Spacing
+                    </label>
+                    <span className="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                      {p.trackSpacing}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={10}
+                    step={1}
+                    value={p.trackSpacing}
+                    onChange={(e) => p.setTrackSpacing(Number(e.target.value))}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+                  />
+                  <div className="flex justify-between mt-1 text-xs text-gray-400">
+                    <span>Compact</span>
+                    <span>Spacious</span>
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -168,11 +262,11 @@ export function PosterSidebar(p: PosterSidebarProps) {
                 {/* Tagline */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Custom Tagline
+                    Your personal message
                   </label>
                   <input
                     type="text"
-                    placeholder="Add a custom tagline..."
+                    placeholder="Add a custom message..."
                     value={p.tagline}
                     onChange={(e) => p.setTagline(e.target.value)}
                     className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:border-black focus:ring-2 focus:ring-black/10 transition-colors outline-none"

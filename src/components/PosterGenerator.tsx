@@ -6,7 +6,7 @@ import { useArtworkPreload } from "../hooks/useArtworkPreload";
 import { usePalette } from "../hooks/usePalette";
 import { useWaveform } from "../hooks/useWaveform";
 import { PosterCanvas } from "./PosterCanvas";
-import type { PosterBg, FrameStyle, LayoutVariant } from "./PosterCanvas";
+import type { PosterBg, FrameStyle, LayoutVariant, PaletteShape, TracklistColumns } from "./PosterCanvas";
 import { PosterSidebar } from "./PosterSidebar";
 import type { BgMode } from "./PosterBgPicker";
 import type { FontPickerValue } from "./FontPicker";
@@ -31,21 +31,24 @@ export function PosterGenerator({ album, onBack, tokenMode = false, token, onDow
   const [bgMode, setBgMode] = useState<BgMode>("beige");
   const [customBg, setCustomBg] = useState<string>("#eaeaea");
 
-  const [frame, setFrame] = useState<FrameStyle>("none");
+  const [frame, setFrame] = useState<FrameStyle>("gallery");
   const [layout, setLayout] = useState<LayoutVariant>("60-40");
-  const [radius, setRadius] = useState<number>(8);
+  const [radius, setRadius] = useState<number>(0);
   const [tagline, setTagline] = useState<string>("");
   const [showDuration, setShowDuration] = useState<boolean>(true);
   const [showCopyright, setShowCopyright] = useState<boolean>(true);
   const [showWaveform, setShowWaveform] = useState<boolean>(true);
+  const [paletteShape, setPaletteShape] = useState<PaletteShape>("rounded");
+  const [tracklistColumns, setTracklistColumns] = useState<TracklistColumns>("auto");
+  const [trackSpacing, setTrackSpacing] = useState<TrackSpacing>(5);
 
   // ====== Font (nuovo picker) ======
   const [fontValue, setFontValue] = useState<FontPickerValue>({
-    familyId: "Inter",
-    weight: 800,
+    familyId: "Helvetica Neue",
+    weight: 700,
   });
   const [fontStack, setFontStack] = useState<string>(
-    `'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif`
+    `'Helvetica Neue', Helvetica, Arial, ui-sans-serif, system-ui, -apple-system, sans-serif`
   );
   const handleFontChange = (v: FontPickerValue, cssStack: string) => {
     setFontValue(v);
@@ -136,7 +139,7 @@ export function PosterGenerator({ album, onBack, tokenMode = false, token, onDow
           "--ring": "rgba(255,255,255,0.10)",
           "--shadow": "0 14px 50px rgba(0,0,0,0.6)",
           "--chip": "rgba(0,0,0,0.25)",
-          "--overlay": "0.35",
+          "--overlay": "0.68",
         } as React.CSSProperties;
       default:
         return {} as React.CSSProperties;
@@ -336,6 +339,9 @@ const fontVars = useMemo<React.CSSProperties>(() => {
           showCopyright={showCopyright}
           showWaveform={showWaveform}
           waveformData={waveformData}
+          paletteShape={paletteShape}
+          tracklistColumns={tracklistColumns}
+          trackSpacing={trackSpacing}
           themeVars={themeVars}
           fontVars={fontVars}
           frameVars={frameVars}
@@ -360,6 +366,12 @@ const fontVars = useMemo<React.CSSProperties>(() => {
           setRadius={setRadius}
           frame={frame}
           setFrame={setFrame}
+          paletteShape={paletteShape}
+          setPaletteShape={setPaletteShape}
+          tracklistColumns={tracklistColumns}
+          setTracklistColumns={setTracklistColumns}
+          trackSpacing={trackSpacing}
+          setTrackSpacing={setTrackSpacing}
           tagline={tagline}
           setTagline={setTagline}
           showDuration={showDuration}
